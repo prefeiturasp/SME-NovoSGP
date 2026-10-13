@@ -131,6 +131,7 @@ namespace SME.SGP.IoC
             RegistrarServicoArmazenamento(services, configuration);
 
             RegistrarMapeamentos.Registrar();
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         private void RegistrarMetricas(IServiceCollection services)
