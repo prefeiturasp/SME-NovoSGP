@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.US155461
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.NotasFechamentoConselho
 {
     // A coleção exclusiva protege o interceptor Dapper estático usado pelo projeto.
-    [CollectionDefinition("NotasUS155461", DisableParallelization = true)]
-    public class NotasUS155461Collection : ICollectionFixture<NotasUS155461Fixture> { }
+    [CollectionDefinition("NotasFechamentoConselho", DisableParallelization = true)]
+    public class NotasFechamentoConselhoCollection : ICollectionFixture<NotasFechamentoConselhoFixture> { }
 
-    public class NotasUS155461Fixture : IAsyncLifetime
+    public class NotasFechamentoConselhoFixture : IAsyncLifetime
     {
         private readonly PostgreSqlContainer container = new PostgreSqlBuilder()
             .WithImage("postgres:15-alpine").WithDatabase("caracterizacao_notas")

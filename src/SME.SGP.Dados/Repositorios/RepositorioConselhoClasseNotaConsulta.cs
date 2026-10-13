@@ -165,6 +165,71 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre, dataMatricula, dataSituacao, tipoCalendario, alunoCodigo });
         }
 
+        public async Task<NotasFechamentoConselhoDto> ObterFontesNotasFechamentoConselhoAsync(string turmaCodigo, int bimestre, long? tipoCalendario, string alunoCodigo)
+        {
+            var condicaoBimestre = bimestre > 0 ? "and pe.bimestre = @bimestre" : string.Empty;
+            var condicaoTipoCalendario = tipoCalendario.HasValue
+                ? "and (pe.tipo_calendario_id = @tipoCalendario or pe.tipo_calendario_id is null)" : string.Empty;
+            var condicaoAlunoFechamento = !string.IsNullOrEmpty(alunoCodigo) ? "and fa.aluno_codigo = @alunoCodigo" : string.Empty;
+            var condicaoAlunoConselho = !string.IsNullOrEmpty(alunoCodigo) ? "and cca.aluno_codigo = @alunoCodigo" : string.Empty;
+            // O handler atual converte bimestre zero para null na fonte conselho (todos os períodos).
+            var condicaoConselho = bimestre < 0 ? "and ctx.periodo_escolar_id is null" : string.Empty;
+            var query = $@"with contexto as materialized (
+                select ft.id, ft.periodo_escolar_id, t.id as turma_interna, t.turma_id as TurmaCodigo,
+                       pe.id as periodo_id, pe.bimestre
+                  from fechamento_turma ft
+                  inner join turma t on t.id = ft.turma_id
+                  left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                 where t.turma_id = @turmaCodigo
+                       {condicaoBimestre}
+                       {condicaoTipoCalendario}
+            ), fechamento as (
+                select ctx.bimestre, fn.disciplina_id as ComponenteCurricularCodigo,
+                       fn.conceito_id as ConceitoId, fn.nota, fa.aluno_codigo as AlunoCodigo,
+                       ctx.TurmaCodigo,
+                       row_number() over (partition by ctx.turma_interna, fa.aluno_codigo, ctx.periodo_id,
+                                          fn.disciplina_id order by fn.id desc) as sequencia
+                  from contexto ctx
+                  inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ctx.id
+                  inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
+                  inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                 where 1 = 1 {condicaoAlunoFechamento}
+            )
+            select false as DoConselho, f.bimestre, f.ComponenteCurricularCodigo, f.ConceitoId, f.nota,
+                   f.AlunoCodigo, f.TurmaCodigo, 0::bigint as ConselhoClasseId, 0::bigint as ConselhoClasseNotaId
+              from fechamento f where f.sequencia = 1
+            union all
+            select true as DoConselho, ctx.bimestre, ccn.componente_curricular_codigo as ComponenteCurricularCodigo,
+                   ccn.conceito_id as ConceitoId, ccn.nota, cca.aluno_codigo as AlunoCodigo,
+                   ctx.TurmaCodigo, cc.id as ConselhoClasseId, ccn.id as ConselhoClasseNotaId
+              from contexto ctx
+              inner join conselho_classe cc on cc.fechamento_turma_id = ctx.id
+              inner join conselho_classe_aluno cca on cca.conselho_classe_id = cc.id
+              inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
+             where 1 = 1 {condicaoAlunoConselho} {condicaoConselho}";
+
+            var fontes = await database.Conexao.QueryAsync<NotaFonteFechamentoConselhoDto>(query,
+                new { turmaCodigo, bimestre, tipoCalendario, alunoCodigo });
+            var fechamento = new List<NotaConceitoBimestreComponenteDto>();
+            var conselho = new List<NotaConceitoBimestreComponenteDto>();
+            foreach (var fonte in fontes)
+            {
+                var nota = new NotaConceitoBimestreComponenteDto
+                {
+                    Bimestre = fonte.Bimestre,
+                    ComponenteCurricularCodigo = fonte.ComponenteCurricularCodigo,
+                    ConceitoId = fonte.ConceitoId,
+                    Nota = fonte.Nota,
+                    AlunoCodigo = fonte.AlunoCodigo,
+                    TurmaCodigo = fonte.TurmaCodigo,
+                    ConselhoClasseId = fonte.ConselhoClasseId,
+                    ConselhoClasseNotaId = fonte.ConselhoClasseNotaId
+                };
+                (fonte.DoConselho ? conselho : fechamento).Add(nota);
+            }
+            return new NotasFechamentoConselhoDto { Fechamento = fechamento, Conselho = conselho };
+        }
+
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null, bool validaMatricula = true)
         {
             var condicaoSemBimestre = bimestre == 0 ? "or pe.id is null" : string.Empty;
@@ -228,7 +293,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var condicaoAlunoCodigo = !string.IsNullOrEmpty(alunoCodigo) ? "and cca.aluno_codigo = @alunoCodigo" : string.Empty;
 
-            var query = $@"select distinct * from (
+            var query = $@"select * from (
                 select pe.bimestre,
                     ccn.componente_curricular_codigo as ComponenteCurricularCodigo,
                     cc.id as ConselhoClasseId,

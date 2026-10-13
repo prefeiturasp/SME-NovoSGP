@@ -1,6 +1,8 @@
 using Dapper;
 using MediatR;
-using Moq;
+using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Constantes;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
@@ -13,14 +15,14 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.US155461
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.NotasFechamentoConselho
 {
-    [Collection("NotasUS155461")]
-    public class NotasUS155461CaracterizacaoTeste
+    [Collection("NotasFechamentoConselho")]
+    public class NotasFechamentoConselhoParidadeTeste
     {
-        private readonly NotasUS155461Fixture fixture;
+        private readonly NotasFechamentoConselhoFixture fixture;
         private readonly ITestOutputHelper output;
-        public NotasUS155461CaracterizacaoTeste(NotasUS155461Fixture fixture, ITestOutputHelper output)
+        public NotasFechamentoConselhoParidadeTeste(NotasFechamentoConselhoFixture fixture, ITestOutputHelper output)
         {
             this.fixture = fixture;
             this.output = output;
@@ -92,20 +94,40 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.US155461
         {
             await fixture.PrepararAsync();
             var cache = new RepositorioCacheFake();
-            var fechamento = new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQueryHandler(fixture.Conselho, cache);
-            var conselho = new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQueryHandler(fixture.Conselho, cache);
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(m => m.Send(It.IsAny<ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery>(), It.IsAny<CancellationToken>()))
-                .Returns((ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery q, CancellationToken ct) => fechamento.Handle(q, ct));
-            mediator.Setup(m => m.Send(It.IsAny<ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery>(), It.IsAny<CancellationToken>()))
-                .Returns((ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery q, CancellationToken ct) => conselho.Handle(q, ct));
-            var handler = new ObterNotasFinaisBimestresAlunoQueryHandler(mediator.Object);
-            var retorno = await handler.Handle(new ObterNotasFinaisBimestresAlunoQuery(
+            var services = new ServiceCollection();
+            services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(ObterNotasFinaisBimestresAlunoQueryHandler).Assembly));
+            services.AddSingleton<IRepositorioConselhoClasseNotaConsulta>(fixture.Conselho);
+            services.AddSingleton<IRepositorioCache>(cache);
+            using var provider = services.BuildServiceProvider();
+            var retorno = await provider.GetRequiredService<IMediator>().Send(new ObterNotasFinaisBimestresAlunoQuery(
                 new[] { "TESTE-A", "TESTE-B" }, "ALUNO-A", tipoCalendario: 10), CancellationToken.None);
             Comparar(new[] { Nota(89,1,9,id:101,conselho:1), Nota(138,1,null,3,103,1),
                 Nota(89,1,9,id:110,conselho:1), Nota(89,2,null,3,106,2),
                 Nota(89,null,10,id:107,conselho:3), Nota(89,1,0,id:108,conselho:4,turma:"TESTE-B"),
                 Nota(139,1,2), Nota(7,1,3) }, retorno);
+        }
+
+        [Theory]
+        [InlineData(0, null)]
+        [InlineData(0, 10L)]
+        [InlineData(0, 20L)]
+        [InlineData(1, null)]
+        [InlineData(1, 10L)]
+        [InlineData(1, 20L)]
+        [InlineData(2, null)]
+        [InlineData(2, 10L)]
+        [InlineData(2, 20L)]
+        [InlineData(-1, null)]
+        public async Task Deve_preservar_fontes_completas_na_consulta_unificada(int bimestre, long? calendario)
+        {
+            await fixture.PrepararAsync();
+            foreach (var aluno in new[] { "ALUNO-A", "ALUNO-B", null, "" })
+            {
+                var fontes = await fixture.Conselho.ObterFontesNotasFechamentoConselhoAsync("TESTE-A", bimestre, calendario, aluno);
+                var referencia = await FontesNotasFechamentoConselhoReferenciaAnterior.ObterAsync(fixture.Conexao, "TESTE-A", bimestre, calendario, aluno);
+                Comparar(referencia.Fechamento, fontes.Fechamento);
+                Comparar(referencia.Conselho, fontes.Conselho);
+            }
         }
 
         [Theory]
@@ -130,6 +152,80 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.US155461
                 .Select(c => Nota(1000 + c, 1, 7, aluno: $"VOLUME-{a}"))).ToArray();
             Comparar(esperado, retorno);
             output.WriteLine($"Massa sintética: {alunos} estudantes, {alunos * 12} notas persistidas, {retorno.Length} notas retornadas.");
+        }
+
+        [Theory]
+        [InlineData(30, false, 0)]
+        [InlineData(30, true, 0)]
+        [InlineData(30, false, 2)]
+        [InlineData(30, true, 2)]
+        [InlineData(300, false, 0)]
+        [InlineData(300, true, 0)]
+        [InlineData(300, false, 2)]
+        [InlineData(300, true, 2)]
+        [InlineData(1000, false, 0)]
+        [InlineData(1000, true, 0)]
+        [InlineData(1000, false, 2)]
+        [InlineData(1000, true, 2)]
+        public async Task Deve_preservar_volume_das_fontes_unificadas_e_finais_contra_referencia_anterior(int alunos, bool comConselho, int bimestre)
+        {
+            await fixture.PrepararAsync();
+            await SqlMapper.ExecuteAsync(fixture.Conexao, @"
+                insert into periodo_escolar
+                    select 100+p,10,p,timestamp '2026-02-01',timestamp '2026-12-31' from generate_series(1,4) p;
+                insert into fechamento_turma select 100+p,1,case when p=5 then null else 100+p end from generate_series(1,5) p;
+                insert into fechamento_turma_disciplina
+                    select 1000+p*10+c,100+p,1000+c,false from generate_series(1,5) p cross join generate_series(1,6) c;
+                insert into componente_curricular select 1000+c,true from generate_series(1,6) c;
+                insert into fechamento_aluno
+                    select 100000+p*100000+a*10+c,1000+p*10+c,'VOLUME-'||a from generate_series(1,5) p
+                    cross join generate_series(1,@alunos) a cross join generate_series(1,6) c;
+                insert into fechamento_nota
+                    select 1000000+p*1000000+a*100+c*10+v,100000+p*100000+a*10+c,1000+c,
+                           case when c=6 then 2 else null end,case when c=6 then null else 5+v end,false
+                    from generate_series(1,5) p cross join generate_series(1,@alunos) a
+                    cross join generate_series(1,6) c cross join generate_series(0,2) v;
+                insert into conselho_classe select 100+p,100+p from generate_series(1,5) p where @comConselho;
+                insert into conselho_classe_aluno
+                    select 100000+p*10000+a,100+p,'VOLUME-'||a from generate_series(1,5) p
+                    cross join generate_series(1,@alunos) a where @comConselho and a%2=0;
+                insert into conselho_classe_nota
+                    select 20000000+p*1000000+a*100+c*10+v,100000+p*10000+a,1000+c,
+                           case when c=6 then 3 else null end,
+                           case when c in (5,6) then null when c=4 then 0 else 9 end,false
+                    from generate_series(1,5) p cross join generate_series(1,@alunos) a
+                    cross join generate_series(1,6) c cross join generate_series(0,1) v
+                    where @comConselho and a%2=0;
+            ", new { alunos, comConselho });
+
+            var referencia = await FontesNotasFechamentoConselhoReferenciaAnterior.ObterAsync(fixture.Conexao, "TESTE-A", bimestre, 10, null);
+            var fontes = await fixture.Conselho.ObterFontesNotasFechamentoConselhoAsync("TESTE-A", bimestre, 10, null);
+            Comparar(referencia.Fechamento, fontes.Fechamento);
+            Comparar(referencia.Conselho, fontes.Conselho);
+
+            // Conselho presente/ausente por estudante, em todos os quatro estados das fontes no cache.
+            foreach (var aluno in new[] { "VOLUME-1", "VOLUME-2", $"VOLUME-{alunos}" }.Distinct())
+            {
+                var anterior = await FontesNotasFechamentoConselhoReferenciaAnterior.ObterAsync(fixture.Conexao, "TESTE-A", bimestre, 10, aluno);
+                var conselhoValido = anterior.Conselho.Where(n => n.NotaConceito.HasValue).ToArray();
+                var esperado = conselhoValido.Concat(anterior.Fechamento.Where(f =>
+                    !conselhoValido.Any(c => c.ComponenteCurricularCodigo == f.ComponenteCurricularCodigo && c.Bimestre == f.Bimestre))).ToArray();
+                foreach (var estado in Enumerable.Range(0, 4))
+                {
+                    var cache = new RepositorioCacheNotasTeste();
+                    if ((estado & 1) != 0)
+                        await cache.SalvarAsync(string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, "TESTE-A", aluno),
+                            JsonConvert.SerializeObject(anterior.Fechamento));
+                    if ((estado & 2) != 0)
+                        await cache.SalvarAsync(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO, "TESTE-A", bimestre, aluno),
+                            JsonConvert.SerializeObject(anterior.Conselho));
+                    var handler = new ObterNotasFinaisBimestresAlunoQueryHandler(fixture.Conselho, cache);
+                    var query = new ObterNotasFinaisBimestresAlunoQuery(new[] { "TESTE-A" }, aluno, bimestre: bimestre, tipoCalendario: 10);
+                    Comparar(esperado, await handler.Handle(query, CancellationToken.None));
+                    Comparar(esperado, await handler.Handle(query, CancellationToken.None));
+                }
+            }
+            output.WriteLine($"Massa controlada: {alunos} estudantes, 5 períodos, 6 componentes, {alunos * 90} notas de fechamento; conselho={comConselho}. Validação de paridade, não medição de desempenho.");
         }
 
         [Theory]

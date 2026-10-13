@@ -5,6 +5,8 @@ using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Aplicacao.Teste.Queries.ConselhoClasse;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -16,14 +18,61 @@ using Xunit.Abstractions;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
 {
-    public class NotasConselhoUS155461RetornoCaracterizacaoTeste
+    public class ObterNotasFrequenciaUseCaseCaracterizacaoTeste
     {
         private readonly Mock<IMediator> mediator = new Mock<IMediator>();
         private readonly ITestOutputHelper output;
         private readonly List<NotaConceitoBimestreComponenteDto> notasConselho = new List<NotaConceitoBimestreComponenteDto>();
         private readonly List<NotaConceitoBimestreComponenteDto> notasFechamento = new List<NotaConceitoBimestreComponenteDto>();
 
-        public NotasConselhoUS155461RetornoCaracterizacaoTeste(ITestOutputHelper output) => this.output = output;
+        public ObterNotasFrequenciaUseCaseCaracterizacaoTeste(ITestOutputHelper output) => this.output = output;
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task Deve_reutilizar_fontes_unificadas_no_fluxo_da_tela_com_handlers_reais_de_notas(bool fontesJaCarregadas)
+        {
+            Preparar(false, true, false);
+            var conselho = new[] { Nota(1001, 9, null, null) };
+            var fechamento = new[] { Nota(0, 7, null, null) };
+            var repositorio = new Mock<IRepositorioConselhoClasseNotaConsulta>();
+            repositorio.Setup(r => r.ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync("1", null, null, null, null, "1"))
+                .ReturnsAsync(conselho);
+            repositorio.Setup(r => r.ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync("1", 0, null, null, null, "1"))
+                .ReturnsAsync(fechamento);
+            repositorio.Setup(r => r.ObterFontesNotasFechamentoConselhoAsync("1", 0, null, "1"))
+                .ReturnsAsync(new NotasFechamentoConselhoDto { Fechamento = fechamento, Conselho = conselho });
+            var cache = new RepositorioCacheNotasTeste();
+            var fonteConselho = new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQueryHandler(repositorio.Object, cache);
+            var notasConselhoHandler = new ObterConselhoClasseNotasAlunoQueryHandler(mediator.Object);
+            var finais = new ObterNotasFinaisBimestresAlunoQueryHandler(repositorio.Object, cache);
+            Responder<ObterTurmaPorConselhoClasseIdQuery, string>("1");
+            mediator.Setup(m => m.Send(It.IsAny<ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery>(), It.IsAny<CancellationToken>()))
+                .Returns((ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery q, CancellationToken ct) => fonteConselho.Handle(q, ct));
+            mediator.Setup(m => m.Send(It.IsAny<ObterConselhoClasseNotasAlunoQuery>(), It.IsAny<CancellationToken>()))
+                .Returns((ObterConselhoClasseNotasAlunoQuery q, CancellationToken ct) => notasConselhoHandler.Handle(q, ct));
+            mediator.Setup(m => m.Send(It.IsAny<ObterNotasFinaisBimestresAlunoQuery>(), It.IsAny<CancellationToken>()))
+                .Returns((ObterNotasFinaisBimestresAlunoQuery q, CancellationToken ct) => finais.Handle(q, ct));
+
+            // Também verifica reutilização quando outro consumidor já carregou ambas as fontes.
+            if (fontesJaCarregadas)
+                await finais.Handle(new ObterNotasFinaisBimestresAlunoQuery(new[] { "1" }, "1"), CancellationToken.None);
+
+            for (var i = 0; i < 2; i++)
+            {
+                var retorno = await Executar(true);
+                var pos = Assert.Single(NotasPos(retorno));
+                Assert.Equal(1001L, pos.Id);
+                Assert.Equal(9, pos.Nota);
+                Assert.False(pos.EmAprovacao);
+            }
+            repositorio.Verify(r => r.ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync("1", null, null, null, null, "1"),
+                Times.Never);
+            repositorio.Verify(r => r.ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync("1", 0, null, null, null, "1"),
+                Times.Never);
+            repositorio.Verify(r => r.ObterFontesNotasFechamentoConselhoAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<long?>(), It.IsAny<string>()),
+                Times.Once);
+        }
 
         public static IEnumerable<object[]> CenariosAprovacao()
         {
