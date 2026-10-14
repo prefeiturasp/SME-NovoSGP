@@ -127,17 +127,6 @@ namespace SME.SGP.Aplicacao
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToList();
 
-            var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
-
-            if (conselhosClassesIds.NaoEhNulo())
-            {
-                foreach (var conselhosClassesId in conselhosClassesIds)
-                {
-                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.Bimestre));
-                    notasConselhoClasseAluno.AddRange(notasParaAdicionar);
-                }
-            }
-
             if (turmasCodigos.Count > 0)
                 turmasCodigos = await mediator.Send(new ObterTurmasConsideradasNoConselhoQuery(turmasCodigos, turma));
 
@@ -180,6 +169,17 @@ namespace SME.SGP.Aplicacao
                     notasFechamentoAluno = await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigosFiltro, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.Bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, anoLetivo));
                 else
                     notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigosFiltro, notasFrequenciaDto.AlunoCodigo, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, notasFrequenciaDto.Bimestre, validaMatricula));
+            }
+
+            var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
+
+            if (conselhosClassesIds.NaoEhNulo())
+            {
+                foreach (var conselhosClassesId in conselhosClassesIds)
+                {
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.Bimestre));
+                    notasConselhoClasseAluno.AddRange(notasParaAdicionar);
+                }
             }
 
             var usuarioAtual = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
