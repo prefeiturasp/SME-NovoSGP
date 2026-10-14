@@ -258,7 +258,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.NotasFechamentoConselho
             Assert.False(Assinar(esperado).SequenceEqual(Assinar(atual)));
         }
 
-        private void Comparar(IEnumerable<NotaConceitoBimestreComponenteDto> esperado, IEnumerable<NotaConceitoBimestreComponenteDto> atual)
+        private static void Comparar(IEnumerable<NotaConceitoBimestreComponenteDto> esperado, IEnumerable<NotaConceitoBimestreComponenteDto> atual)
         {
             // Ordena as assinaturas, mas preserva multiplicidade. A consulta não promete ORDER BY.
             Assert.Equal(Assinar(esperado), Assinar(atual));

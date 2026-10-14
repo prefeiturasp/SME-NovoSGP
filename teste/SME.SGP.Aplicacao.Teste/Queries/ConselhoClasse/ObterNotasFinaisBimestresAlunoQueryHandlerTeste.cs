@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.ConselhoClasse
         public async Task Deve_preservar_fechamento_quando_nao_ha_conselho()
         {
             var fechamento = new[] { Nota(89, 1, 7), Nota(89, 2, null, 2), Nota(139, null, 0) };
-            var retorno = await Executar(fechamento, new NotaConceitoBimestreComponenteDto[0]);
+            var retorno = await Executar(fechamento, Array.Empty<NotaConceitoBimestreComponenteDto>());
             Comparar(fechamento, retorno);
         }
 
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.ConselhoClasse
         public async Task Deve_preservar_nota_existente_somente_no_conselho()
         {
             var conselho = Nota(139, null, 8, id: 101);
-            Comparar(new[] { conselho }, await Executar(new NotaConceitoBimestreComponenteDto[0], new[] { conselho }));
+            Comparar(new[] { conselho }, await Executar(Array.Empty<NotaConceitoBimestreComponenteDto>(), new[] { conselho }));
         }
 
         [Fact]
