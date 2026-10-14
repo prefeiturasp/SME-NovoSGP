@@ -95,9 +95,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
         {
             Preparar(regencia, final, conceito);
             notasConselho.Add(Nota(1001, conceito ? null : 6, conceito ? 2 : null, final ? null : 1));
-            mediator.Setup(m => m.Send(It.Is<ObterNotaConselhoEmAprovacaoQuery>(q => q.ConselhoClasseNotaId == 1001),
-                It.IsAny<CancellationToken>())).ReturnsAsync(workflow);
+            mediator.Setup(m => m.Send(It.Is<ObterNotasConselhoEmAprovacaoPorIdsQuery>(q => q.IdsConselhoClasseNota.SequenceEqual(new long[] { 1001 })),
+                It.IsAny<CancellationToken>())).ReturnsAsync(workflow.HasValue
+                    ? new[] { new ConselhoClasseNotaAprovacaoDto { Id = 1001, NotaEmAprovacao = workflow.Value } }
+                    : Array.Empty<ConselhoClasseNotaAprovacaoDto>());
             var retorno = await Executar(final);
+            mediator.Verify(m => m.Send(It.Is<ObterNotasConselhoEmAprovacaoPorIdsQuery>(q => q.IdsConselhoClasseNota.SequenceEqual(new long[] { 1001 })),
+                It.IsAny<CancellationToken>()), Times.Once);
             var pos = Assert.Single(NotasPos(retorno));
             Assert.Equal(1001L, pos.Id);
             Assert.Equal(valorEsperado, pos.Nota);
@@ -129,6 +133,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             Preparar(regencia, final, false);
             notasFechamento.Add(Nota(0, 7, null, final ? null : 1));
             var retorno = await Executar(final);
+            mediator.Verify(m => m.Send(It.IsAny<ObterNotasConselhoEmAprovacaoPorIdsQuery>(),
+                It.IsAny<CancellationToken>()), Times.Never);
             var pos = Assert.Single(NotasPos(retorno));
             Assert.Null(pos.Id);
             Assert.Equal(7, pos.Nota);
@@ -189,6 +195,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.ConselhoClasse
             Responder<ObterPeriodoEscolarPorCalendarioEDataQuery, PeriodoEscolar>(periodo);
             Responder<ObterTurmasConsideradasNoConselhoQuery, List<string>>(new List<string> { "1" });
             Responder<ObterConselhoClasseNotasAlunoQuery, IEnumerable<NotaConceitoBimestreComponenteDto>>(notasConselho);
+            Responder<ObterNotasConselhoEmAprovacaoPorIdsQuery, IEnumerable<ConselhoClasseNotaAprovacaoDto>>(Array.Empty<ConselhoClasseNotaAprovacaoDto>());
             Responder<ObterNotasFechamentosPorTurmasCodigosBimestreQuery, IEnumerable<NotaConceitoBimestreComponenteDto>>(notasFechamento);
             Responder<ObterNotasFinaisBimestresAlunoQuery, IEnumerable<NotaConceitoBimestreComponenteDto>>(notasFechamento);
             Responder<ObterDadosAlunosQuery, IEnumerable<AlunoDadosBasicosDto>>(new[] { new AlunoDadosBasicosDto {
