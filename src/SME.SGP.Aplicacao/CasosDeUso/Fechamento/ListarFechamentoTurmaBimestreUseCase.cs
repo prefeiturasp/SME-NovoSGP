@@ -188,6 +188,11 @@ namespace SME.SGP.Aplicacao
                     alunos.Select(a => a.CodigoAluno).ToArray(),
                     dto.FechamentosTurma.Select(ft => ft.FechamentoTurmaId).Distinct().ToArray()))).ToList();
 
+            var fechamentosTurmaDisciplinaIds = dto.FechamentosTurma.Select(ft => ft.Id).Distinct().ToArray();
+            var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(
+                    alunos.Select(a => a.CodigoAluno).ToArray(),
+                    fechamentosTurmaDisciplinaIds));
+
             foreach (var aluno in alunos)
             {
                 var fechamentoTurma = (from ft in dto.FechamentosTurma
@@ -213,7 +218,7 @@ namespace SME.SGP.Aplicacao
 
                 if (aluno.CodigoAluno.NaoEhNulo())
                 {
-                    var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.NaoEhNulo() ? fechamentoTurma.Id : 0);
+                    var notasConceitoBimestre = notasConceitoBimestreRetorno.Where(x => x.CodigoAluno == aluno.CodigoAluno && x.FechamentoId == fechamentoTurma?.Id);
 
                     if (notasConceitoBimestre.Any())
                         alunoDto.NotasConceitoBimestre = new List<FechamentoConsultaNotaConceitoTurmaListaoDto>();
@@ -527,9 +532,6 @@ namespace SME.SGP.Aplicacao
             var conceito = await mediator.Send(new ObterConceitoPorIdQuery(id));
             return conceito.NaoEhNulo() ? conceito.Id : 0;
         }
-
-        public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
-           => await mediator.Send(new ObterNotasBimestrePorCodigoAlunoFechamentoIdQuery(codigoAluno, fechamentoTurmaId));
 
         private async Task ValidaMinimoAvaliacoesBimestrais(DisciplinaDto disciplinaEOL, IEnumerable<DisciplinaDto> disciplinasRegencia, long tipoCalendarioId, string turmaCodigo, int bimestre, TipoAvaliacao tipoAvaliacaoBimestral, FechamentoNotaConceitoTurmaDto fechamentoNotaConceitoTurma)
         {
