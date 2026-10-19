@@ -358,10 +358,12 @@ namespace SME.SGP.Aplicacao
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), dto.Turma.AnoLetivo);
             var frequenciaPorAluno = await mediator.Send(new ObterFrequenciaGeralIndexadaPorAlunosQuery(
                 alunos.Select(a => a.CodigoAluno).ToArray(), dto.Turma.CodigoTurma, dto.ComponenteCurricularCodigo));
+            var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(
+                alunos.Select(a => a.CodigoAluno).ToArray(), dto.Turma.AnoLetivo));
 
             foreach (var aluno in alunos)
             {
-                AlunosFechamentoNotaConceitoTurmaDto fechamentoFinalAluno = await TrataFrequenciaAluno(aluno, dto.Turma, matriculadosTurmaPAP, frequenciaPorAluno);
+                AlunosFechamentoNotaConceitoTurmaDto fechamentoFinalAluno = TrataFrequenciaAluno(aluno, dto.Turma, matriculadosTurmaPAP, frequenciaPorAluno, planosAEE);
 
                 fechamentoFinalAluno.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, ultimoPeriodoEscolar.PeriodoInicio, dto.Turma.EhTurmaInfantil));
 
@@ -496,7 +498,7 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        private async Task<AlunosFechamentoNotaConceitoTurmaDto> TrataFrequenciaAluno(AlunoPorTurmaResposta aluno, Turma turma, IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP, Dictionary<string, FrequenciaAluno> frequenciaPorAluno)
+        private AlunosFechamentoNotaConceitoTurmaDto TrataFrequenciaAluno(AlunoPorTurmaResposta aluno, Turma turma, IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP, Dictionary<string, FrequenciaAluno> frequenciaPorAluno, IEnumerable<PlanoAEEResumoDto> planosAEE)
         {
             var percentualFrequencia = FrequenciaAluno.FormatarPercentual(0);
 
@@ -512,7 +514,7 @@ namespace SME.SGP.Aplicacao
                 Nome = aluno.NomeAluno,
                 Frequencia = percentualFrequencia,
                 NumeroChamada = aluno.ObterNumeroAlunoChamada(),
-                EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo)),
+                EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno),
                 EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
             };
             return fechamentoFinalAluno;

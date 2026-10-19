@@ -73,6 +73,80 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.Fechamento
             Assert.Equal(8.5, notaAluno.NotaConceito);
         }
 
+        [Fact]
+        public async Task Deve_Consultar_Plano_Aee_Em_Lote_E_Preencher_EhAtendidoAEE_Corretamente_No_Fechamento_Final()
+        {
+            var turma = new Turma
+            {
+                Id = 1,
+                CodigoTurma = "1234",
+                AnoLetivo = 2020,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                Ue = new Ue(),
+                TipoTurno = 1
+            };
+
+            var disciplina = new DisciplinaDto
+            {
+                Id = 101,
+                CodigoComponenteCurricular = 101,
+                Nome = "Matemática",
+                Regencia = false
+            };
+
+            var periodoEscolar = new PeriodoEscolar
+            {
+                Bimestre = 4,
+                PeriodoInicio = new System.DateTime(2020, 10, 1),
+                PeriodoFim = new System.DateTime(2020, 12, 20)
+            };
+
+            var alunos = new List<AlunoPorTurmaResposta>
+            {
+                new AlunoPorTurmaResposta { CodigoAluno = "111", NomeAluno = "Aluno Com AEE" },
+                new AlunoPorTurmaResposta { CodigoAluno = "222", NomeAluno = "Aluno Sem AEE" }
+            };
+
+            var usuario = new Usuario { PerfilAtual = Perfis.PERFIL_DIRETOR };
+
+            var dto = new ListagemAlunosFechamentoDto(
+                Enumerable.Empty<FechamentoTurmaDisciplina>(),
+                turma,
+                "101",
+                disciplina,
+                new List<PeriodoEscolar> { periodoEscolar },
+                usuario,
+                Enumerable.Empty<string>());
+
+            mediatorMock
+                .Setup(m => m.Send(It.IsAny<ObterTipoCalendarioIdPorTurmaQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1L);
+
+            mediatorMock
+                .Setup(m => m.Send(It.IsAny<ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Enumerable.Empty<FechamentoTurmaDisciplina>());
+
+            mediatorMock
+                .Setup(m => m.Send(It.IsAny<ObterFrequenciaGeralIndexadaPorAlunosQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Dictionary<string, FrequenciaAluno>());
+
+            mediatorMock
+                .Setup(m => m.Send(It.IsAny<ObterMarcadorAlunoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((MarcadorFrequenciaDto)null);
+
+            mediatorMock
+                .Setup(m => m.Send(It.IsAny<VerificaPlanosAEEPorCodigosAlunosEAnoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<PlanoAEEResumoDto> { new PlanoAEEResumoDto { CodigoAluno = "111" } });
+
+            var resultado = await useCase.RetornaListagemAlunosFechamentoFinal(alunos, new List<DisciplinaDto> { disciplina }, new NotaTipoValor { TipoNota = TipoNota.Nota }, dto);
+
+            mediatorMock.Verify(m => m.Send(It.IsAny<VerificaPlanosAEEPorCodigosAlunosEAnoQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediatorMock.Verify(m => m.Send(It.IsAny<VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery>(), It.IsAny<CancellationToken>()), Times.Never);
+
+            Assert.True(resultado.First(a => a.CodigoAluno == "111").EhAtendidoAEE);
+            Assert.False(resultado.First(a => a.CodigoAluno == "222").EhAtendidoAEE);
+        }
+
         private (List<AlunoPorTurmaResposta> alunos, PeriodoEscolar periodoAtual, ListagemAlunosFechamentoDto dto) MontarCenarioPadrao()
         {
             var turma = new Turma
