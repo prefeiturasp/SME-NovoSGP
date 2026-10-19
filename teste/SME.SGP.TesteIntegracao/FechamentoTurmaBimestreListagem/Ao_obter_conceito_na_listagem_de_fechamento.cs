@@ -16,11 +16,10 @@ using Xunit;
 namespace SME.SGP.TesteIntegracao.FechamentoTurmaBimestreListagem
 {
     /// <summary>
-    /// Characterization: ListarFechamentoTurmaBimestreUseCase.ObterConceito busca o Conceito por id
-    /// via ObterConceitoPorIdQuery -> IRepositorioConceito.ObterPorIdAsync. O valor retornado é o
+    /// Characterization: ListarFechamentoTurmaBimestreUseCase deve buscar todos os Conceitos
+    /// referenciados pelas notas do bimestre numa única consulta em lote. O valor retornado é o
     /// próprio Id do conceito (não Conceito.Valor) quando ele existe, ou 0 quando não existe/não é
-    /// encontrado. A janela de cada teste evita qualquer outra chamada Dommel Get/GetAsync
-    /// concorrente, para que ContarPorTrecho("GetAsync") meça só as buscas de Conceito.
+    /// encontrado.
     /// </summary>
     public class Ao_obter_conceito_na_listagem_de_fechamento : FechamentoTurmaBimestreListagemTesteBase
     {
@@ -45,8 +44,7 @@ namespace SME.SGP.TesteIntegracao.FechamentoTurmaBimestreListagem
             var conceitoId = await InserirNaBaseAsync(CriarConceito("Bom", ativo: true));
 
             var fechamentoTurmaDisciplina = await CarregarFechamento(new[] { ALUNO_1, ALUNO_2 });
-            // Duas notas por conceito no total (uma por aluno) — nenhuma outra chamada Get/GetAsync
-            // deve ocorrer nesta janela, então a contagem abaixo isola só as buscas de Conceito.
+            // Duas notas por conceito no total (uma por aluno).
             await CarregarNotaConceito(fechamentoAlunoId: 1, conceitoId: conceitoId);
             await CarregarNotaConceito(fechamentoAlunoId: 2, conceitoId: conceitoId);
 
@@ -56,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.FechamentoTurmaBimestreListagem
 
             ContadorQueriesTelemetriaFake.Limpar();
             await useCase.RetornaListagemAlunosFechamentoBimestreEspecifico(alunos, CriarPeriodoEscolar(), null, dto);
-            var buscasDeConceito = ContadorQueriesTelemetriaFake.ContarPorTrecho("GetAsync");
+            var buscasDeConceito = ContadorQueriesTelemetriaFake.ContarPorTrecho("from conceito_valores");
 
             buscasDeConceito.ShouldBe(1);
         }
@@ -135,7 +133,7 @@ namespace SME.SGP.TesteIntegracao.FechamentoTurmaBimestreListagem
 
             ContadorQueriesTelemetriaFake.Limpar();
             await useCase.RetornaListagemAlunosFechamentoBimestreEspecifico(alunos, CriarPeriodoEscolar(), null, dto);
-            var buscasDeConceito = ContadorQueriesTelemetriaFake.ContarPorTrecho("GetAsync");
+            var buscasDeConceito = ContadorQueriesTelemetriaFake.ContarPorTrecho("from conceito_valores");
 
             buscasDeConceito.ShouldBe(1);
         }

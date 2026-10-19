@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             ContadorQueriesTelemetriaFake.Limpar();
             await consultas.ObterNotasFechamentoTurmaDisciplina(TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, BIMESTRE_4, SEMESTRE_0);
-            var buscasDeConceito = ContadorQueriesTelemetriaFake.ContarPorTrecho("Get");
+            var buscasDeConceito = ContadorQueriesTelemetriaFake.ContarPorTrecho("from conceito_valores");
 
             buscasDeConceito.ShouldBe(1);
         }
