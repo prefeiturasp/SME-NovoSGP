@@ -147,9 +147,15 @@ namespace SME.SGP.Aplicacao
 
             var alunosValidosOrdenados = alunosValidos.Where(a => a.EstaAtivo(ultimoPeriodoEscolar.PeriodoInicio, ultimoPeriodoEscolar.PeriodoFim)).OrderBy(a => a.NomeAluno).ThenBy(a => a.NomeValido());
 
+            var existeFrequenciaComponenteCurricular = await repositorioFrequenciaAlunoDisciplinaPeriodo
+                .ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma,
+                    new string[] { filtros.DisciplinaCodigo.ToString() }, periodosEscolares.Select(c => c.Id).ToArray());
+
+            var frequenciaPorAluno = await FrequenciaAlunoConsulta.ObterFrequenciaGeralPorAlunos(mediator, alunosValidosOrdenados.Select(a => a.CodigoAluno), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
+
             foreach (var aluno in alunosValidosOrdenados)
             {
-                FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = await TrataFrequenciaAluno(filtros, periodosEscolares, aluno, turma);
+                FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = await TrataFrequenciaAluno(aluno, turma, frequenciaPorAluno, existeFrequenciaComponenteCurricular);
 
                 var marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar() { PeriodoFim = retorno.EventoData });
                 if (marcador.NaoEhNulo())
@@ -263,12 +269,9 @@ namespace SME.SGP.Aplicacao
             return temPeriodoAberto;
         }
 
-        private async Task<FechamentoFinalConsultaRetornoAlunoDto> TrataFrequenciaAluno(FechamentoFinalConsultaFiltroDto filtros, IEnumerable<PeriodoEscolar> periodosEscolares, AlunoPorTurmaResposta aluno, Turma turma)
+        private async Task<FechamentoFinalConsultaRetornoAlunoDto> TrataFrequenciaAluno(AlunoPorTurmaResposta aluno, Turma turma, Dictionary<string, FrequenciaAluno> frequenciaPorAluno, bool existeFrequenciaComponenteCurricular)
         {
-            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmaEComponenteQuery(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString()));
-
-            var existeFrequenciaComponenteCurricular = await repositorioFrequenciaAlunoDisciplinaPeriodo.ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma,
-               new string[] { filtros.DisciplinaCodigo.ToString() }, periodosEscolares.Select(c => c.Id).ToArray());
+            var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
 
             var percentualFrequencia = frequenciaAluno?.PercentualFrequencia;
 
