@@ -26,20 +26,20 @@ namespace SME.SGP.Aplicacao
         {
             var retornoConsultaPaginada = await repositorioPendenciaFechamento.ListarPaginada(Paginacao, filtro.TurmaCodigo, filtro.Bimestre, filtro.ComponenteCurricularId);
 
-            if (retornoConsultaPaginada.Items.NaoEhNulo() && retornoConsultaPaginada.Items.Any())
+            if (!retornoConsultaPaginada.Items.NaoEhNulo() || !retornoConsultaPaginada.Items.Any())
+                return retornoConsultaPaginada;
+            var idsDisciplinas = retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray();
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinas));
+                
+            var dictDisciplinas = disciplinasEOL.ToDictionary(d => d.CodigoComponenteCurricular, d => d.Nome);
+                
+            foreach (var item in retornoConsultaPaginada.Items)
             {
-                // Atualiza nome da situacao
-                retornoConsultaPaginada.Items.ToList()
-                    .ForEach(i => i.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), i.Situacao));
-
-                // Carrega nomes das disciplinas para o DTO de retorno
-                var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray()));
-                var componentesTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(filtro.TurmaCodigo));
-
-                foreach(var disciplinaEOL in disciplinasEOL)
+                item.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), item.Situacao);
+                    
+                if (dictDisciplinas.TryGetValue(item.DisciplinaId, out var nomeDisciplina))
                 {
-                    retornoConsultaPaginada.Items.Where(c => c.DisciplinaId == disciplinaEOL.CodigoComponenteCurricular).ToList()
-                        .ForEach(d => d.ComponenteCurricular = disciplinaEOL.Nome);
+                    item.ComponenteCurricular = nomeDisciplina;
                 }
             }
 
