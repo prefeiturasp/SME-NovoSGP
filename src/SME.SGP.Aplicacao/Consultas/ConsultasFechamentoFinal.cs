@@ -151,11 +151,16 @@ namespace SME.SGP.Aplicacao
                 .ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma,
                     new string[] { filtros.DisciplinaCodigo.ToString() }, periodosEscolares.Select(c => c.Id).ToArray());
 
-            var frequenciaPorAluno = await FrequenciaAlunoConsulta.ObterFrequenciaGeralPorAlunos(mediator, alunosValidosOrdenados.Select(a => a.CodigoAluno), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
+            var frequenciaPorAluno = await mediator.Send(new ObterFrequenciaGeralIndexadaPorAlunosQuery(
+                alunosValidosOrdenados.Select(a => a.CodigoAluno).ToArray(), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString()));
+
+            var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(
+                    alunosValidosOrdenados.Select(a => a.CodigoAluno).ToArray(),
+                    turma.AnoLetivo));
 
             foreach (var aluno in alunosValidosOrdenados)
             {
-                FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = await TrataFrequenciaAluno(aluno, turma, frequenciaPorAluno, existeFrequenciaComponenteCurricular);
+                FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = TrataFrequenciaAluno(aluno, turma, frequenciaPorAluno, existeFrequenciaComponenteCurricular, planosAEE);
 
                 var marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar() { PeriodoFim = retorno.EventoData });
                 if (marcador.NaoEhNulo())
@@ -269,7 +274,7 @@ namespace SME.SGP.Aplicacao
             return temPeriodoAberto;
         }
 
-        private async Task<FechamentoFinalConsultaRetornoAlunoDto> TrataFrequenciaAluno(AlunoPorTurmaResposta aluno, Turma turma, Dictionary<string, FrequenciaAluno> frequenciaPorAluno, bool existeFrequenciaComponenteCurricular)
+        private FechamentoFinalConsultaRetornoAlunoDto TrataFrequenciaAluno(AlunoPorTurmaResposta aluno, Turma turma, Dictionary<string, FrequenciaAluno> frequenciaPorAluno, bool existeFrequenciaComponenteCurricular, IEnumerable<PlanoAEEResumoDto> planosAEE)
         {
             var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
 
@@ -287,7 +292,7 @@ namespace SME.SGP.Aplicacao
                 Frequencia = existeFrequenciaComponenteCurricular ? percentualFrequenciaFormatado : null,
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.ObterNumeroAlunoChamada(),
-                EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
+                EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)
             };
             return fechamentoFinalAluno;
         }
