@@ -57,16 +57,15 @@ namespace SME.SGP.Aplicacao
 
         private ComponenteCurricularEol ObterComponenteUsuarioTurma(IEnumerable<ComponenteCurricularEol> componentesCurricularesUsuarioTurma, long id, DisciplinaDto disciplinaPorId)
         {
-            var componenteUsuarioTurma = componentesCurricularesUsuarioTurma
-                .FirstOrDefault(d => d.PossuiCodigoEquivalente(id));
+            var componenteUsuarioTurma = ObterComponentePorCodigoOuEquivalencia(componentesCurricularesUsuarioTurma, id);
 
             if (componenteUsuarioTurma.NaoEhNulo())
                 return componenteUsuarioTurma;
 
             if (disciplinaPorId.NaoEhNulo() && disciplinaPorId.CodigoComponenteCurricularTerritorioSaber > 0)
             {
-                componenteUsuarioTurma = componentesCurricularesUsuarioTurma
-                    .FirstOrDefault(d => d.PossuiCodigoEquivalente(disciplinaPorId.CodigoComponenteCurricularTerritorioSaber));
+                componenteUsuarioTurma = ObterComponentePorCodigoOuEquivalencia(componentesCurricularesUsuarioTurma,
+                    disciplinaPorId.CodigoComponenteCurricularTerritorioSaber);
 
                 if (componenteUsuarioTurma.NaoEhNulo())
                     return componenteUsuarioTurma;
@@ -81,6 +80,10 @@ namespace SME.SGP.Aplicacao
 
             return null;
         }
+
+        private static ComponenteCurricularEol ObterComponentePorCodigoOuEquivalencia(IEnumerable<ComponenteCurricularEol> componentesCurriculares, long codigo)
+            => componentesCurriculares.FirstOrDefault(componente => componente.Codigo == codigo)
+               ?? componentesCurriculares.FirstOrDefault(componente => componente.PossuiCodigoEquivalente(codigo));
 
         private static DisciplinaDto MapearParaDto(ComponenteCurricularEol componenteUsuarioTurma, Turma turma, long idAula)
             => new DisciplinaDto()
