@@ -256,23 +256,25 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanoAEEResumoDto>> ObterPlanosPorAlunosEAno(string[] codigoEstudante, int ano)
         {
-            var query = new StringBuilder(@"select distinct   pa.Id,
+            var query = new StringBuilder(@"select distinct on (pa.aluno_codigo)
+                                            pa.Id,
                                             pa.aluno_numero as numero,
                                             pa.aluno_nome as nome,
                                             tu.nome as turma,
                                             pa.situacao,
-                                            pa.aluno_codigo as CodigoAluno 
+                                            pa.aluno_codigo as CodigoAluno
                                         from plano_aee pa
-                                        inner join turma tu on tu.id = pa.turma_id 
+                                        inner join turma tu on tu.id = pa.turma_id
                                         inner join plano_aee_versao pav on pav.plano_aee_id = pa.id and not pav.excluido
-                                        where pa.aluno_codigo = any(@codigoEstudante) 
-                                        and pa.situacao not in (3,7)");
+                                        where pa.aluno_codigo = any(@codigoEstudante)
+                                        and pa.situacao not in (3,7)
+                                        and not pa.excluido");
 
             if (ano != DateTimeExtension.HorarioBrasilia().Year)
                 query.AppendLine($@" and (EXTRACT(ISOYEAR from pa.criado_em) = @ano
                                      or EXTRACT(ISOYEAR from pav.criado_em) = @ano)");
 
-            query.AppendLine(@$" limit 1");
+            query.AppendLine(@$" order by pa.aluno_codigo, pa.id desc");
 
             return await database.Conexao.QueryAsync<PlanoAEEResumoDto>(query.ToString(), new { codigoEstudante, ano });
         }
