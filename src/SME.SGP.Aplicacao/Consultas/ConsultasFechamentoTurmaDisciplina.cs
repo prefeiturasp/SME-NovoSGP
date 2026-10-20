@@ -232,8 +232,21 @@ namespace SME.SGP.Aplicacao
 
                 var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(codigosAlunos, fechamentosIds));
 
+                var conceitoIds = notasConceitoBimestreRetorno.Where(n => n.ConceitoId.HasValue).Select(n => n.ConceitoId.Value).Distinct().ToArray();
+                var conceitos = (conceitoIds.Any() ? await repositorioConceito.ObterPorIds(conceitoIds) : Enumerable.Empty<Conceito>()).ToDicionarioPorId();
+
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
                 var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
+
+                var notasEmAprovacao = exigeAprovacao
+                    ? (await mediator.Send(new ObterNotasEmAprovacaoQuery(codigosAlunos, fechamentosTurmasAlunos.Select(x => x.FechamentoTurmaId).Distinct().ToArray()))).ToList()
+                    : new List<NotaEmAprovacaoFechamentoDto>();
+
+                var frequenciasAlunos = await mediator
+                    .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(codigosAlunos, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, turmaId, disciplinaId.ToString()));
+
+                var frequenciaPorAluno = frequenciasAlunos.ToDicionarioPorAluno();
+
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = fechamentosTurmasAlunos.FirstOrDefault(c => c.AlunoCodigo == aluno.CodigoAluno);
@@ -259,8 +272,7 @@ namespace SME.SGP.Aplicacao
                     if (marcador.NaoEhNulo())
                         alunoDto.Informacao = marcador.Descricao;                    
 
-                    var frequenciaAluno = await mediator
-                        .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId));
+                    var frequenciaAluno = frequenciaPorAluno.ObterFrequenciaAlunoOuNulo(aluno.CodigoAluno);
 
                     if (frequenciaAluno.NaoEhNulo())
                     {
@@ -334,13 +346,13 @@ namespace SME.SGP.Aplicacao
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = nomeDisciplina,
-                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota,
+                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value, conceitos) : notaConceitoBimestre.Nota,
                                         EhConceito = notaConceitoBimestre.ConceitoId.HasValue,
-                                        ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty,
+                                        ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value, conceitos) : string.Empty,
                                     };
 
                                     if (exigeAprovacao)
-                                        await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+                                        VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota, notasEmAprovacao);
 
                                     ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(nota);
                                 }
@@ -370,9 +382,14 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
 
-        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
+        private static void VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito, List<NotaEmAprovacaoFechamentoDto> notasEmAprovacao)
         {
-            double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
+            var registro = notasEmAprovacao.FirstOrDefault(x => x.CodigoAluno == codigoAluno &&
+                                                               x.TurmaFechamentoId == turmaFechamentoId &&
+                                                               x.DisciplinaId == disciplinaId);
+
+            // Ausência de registro reproduz o default(double) do QueryFirstOrDefault<double> da consulta unitária (0 => EmAprovacao).
+            double nota = registro?.Nota ?? 0d;
 
             if (nota >= 0)
             {
@@ -396,15 +413,15 @@ namespace SME.SGP.Aplicacao
             else return periodoEscolar.Bimestre;
         }
 
-        private double ObterConceito(long id)
+        private double ObterConceito(long id, IDictionary<long, Conceito> conceitos)
         {
-            var conceito = repositorioConceito.ObterPorId(id);
+            var conceito = conceitos.ObterConceitoOuNulo(id);
             return conceito.NaoEhNulo() ? conceito.Id : 0;
         }
 
-        private string ObterConceitoDescricao(long id)
+        private string ObterConceitoDescricao(long id, IDictionary<long, Conceito> conceitos)
         {
-            var conceito = repositorioConceito.ObterPorId(id);
+            var conceito = conceitos.ObterConceitoOuNulo(id);
             return conceito.NaoEhNulo() ? conceito.Valor : "";
         }
 

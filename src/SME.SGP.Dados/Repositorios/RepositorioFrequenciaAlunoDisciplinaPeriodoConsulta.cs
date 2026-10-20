@@ -147,6 +147,27 @@ namespace SME.SGP.Dados
                 });
         }
 
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralPorAlunosTurmaEComponente(string[] alunosCodigos, string turmaCodigo, string componenteCurricularCodigo = "")
+        {
+            var query = new StringBuilder($@"select * 
+                            from frequencia_aluno
+                           where tipo = {(string.IsNullOrWhiteSpace(componenteCurricularCodigo) ? "2" : "1")}
+                            and codigo_aluno = any(@alunosCodigos)
+                            and turma_id = @turmaCodigo 
+                            and not excluido ");
+
+            if (!string.IsNullOrEmpty(componenteCurricularCodigo))
+                query.AppendLine(" and disciplina_id = @componenteCurricularCodigo");
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunosCodigos,
+                    turmaCodigo,
+                    componenteCurricularCodigo
+                });
+        }
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralPorAlunosETurmas(string[] alunosCodigos, string turmaCodigo)
         {
             var query = new StringBuilder($@"select * 
@@ -381,7 +402,8 @@ namespace SME.SGP.Dados
                                         turma_id = @codigoTurma and 
                                         disciplina_id = any(@componentesCurricularesId) and 
                                         tipo = @tipoFrequencia and
-                                        periodo_escolar_id = any(@periodosEscolaresIds)
+                                        periodo_escolar_id = any(@periodosEscolaresIds) and
+                                        not fa.excluido
                                         {(!string.IsNullOrEmpty(professor) ? " and (professor_rf = @professor or professor_rf is null)" : string.Empty)}
                                 )rf
                             where rf.sequencia = 1";
@@ -583,19 +605,20 @@ namespace SME.SGP.Dados
 
         public async Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(string codigoTurma, string[] componentesCurricularesId, long periodoEscolarId, string professor = null)
         {
-            var sql = @$"select distinct(1)
-                         from registro_frequencia_aluno rfa
-                         inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id     
-                         inner join aula a on a.id = rf.aula_id 
-                         inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
-                         inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
-                         where pe.id = @periodoEscolarId
-                           and not rf.excluido
-                           and not rfa.excluido
-                           and a.turma_id = @codigoTurma
-                           and a.disciplina_id = any(@componentesCurricularesId)
-                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
-                           {(!string.IsNullOrWhiteSpace(professor) ? " and a.professorRf = @professor" : string.Empty)}";
+            var sql = @$"select exists (
+                                select 1
+                                  from registro_frequencia_aluno rfa
+                                 inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
+                                 inner join aula a on a.id = rf.aula_id
+                                 inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
+                                 inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                                 where pe.id = @periodoEscolarId
+                                   and not rf.excluido
+                                   and not rfa.excluido
+                                   and a.turma_id = @codigoTurma
+                                   and a.disciplina_id = any(@componentesCurricularesId)
+                                   and a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                                   {(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor" : string.Empty)})";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componentesCurricularesId, periodoEscolarId, professor });
         }
@@ -775,6 +798,7 @@ namespace SME.SGP.Dados
                                     and pe.periodo_fim >= @dataAtual
                                     and fa.turma_id = @codigoTurma
                                     and fa.disciplina_id = @componenteCurricularId
+                                    and not fa.excluido
                           )tb where    tb.sequencia = 1";
 
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunosCodigo, dataAtual, tipoFrequencia, codigoTurma, componenteCurricularId });

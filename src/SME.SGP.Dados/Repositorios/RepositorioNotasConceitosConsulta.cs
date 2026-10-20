@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
@@ -103,6 +104,24 @@ namespace SME.SGP.Dados.Repositorios
                         order by w.id desc";
 
             return database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
+        }
+
+        public async Task<IEnumerable<NotaEmAprovacaoFechamentoDto>> ObterNotasEmAprovacao(string[] codigosAlunos, long[] turmaFechamentoIds)
+        {
+            var sql = $@"select distinct on (fa.aluno_codigo, fn.disciplina_id, ft.id)
+                                ft.id            as TurmaFechamentoId,
+                                fn.disciplina_id as DisciplinaId,
+                                fa.aluno_codigo  as CodigoAluno,
+                                coalesce(coalesce(w.nota, w.conceito_id),-1) as Nota
+                            from fechamento_turma ft
+                            inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
+                            inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
+                            inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                            left join wf_aprovacao_nota_fechamento w on w.fechamento_nota_id = fn.id and not w.excluido
+                            where ft.id = any(@turmaFechamentoIds) and fa.aluno_codigo = any(@codigosAlunos)
+                        order by fa.aluno_codigo, fn.disciplina_id, ft.id, w.id desc";
+
+            return await database.QueryAsync<NotaEmAprovacaoFechamentoDto>(sql, new { codigosAlunos, turmaFechamentoIds });
         }
 
         public async Task<IEnumerable<NotaConceito>> ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(string codigoTurma)

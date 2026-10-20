@@ -322,6 +322,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<double?>(query, new { conselhoClasseNotaId });
         }
 
+        public async Task<IEnumerable<ConselhoClasseNotaAprovacaoDto>> ObterNotasConselhoEmAprovacaoPorIds(IEnumerable<long> idsConselhoClasseNota)
+        {
+            const string query = @"select wf.conselho_classe_nota_id as Id,
+                                          coalesce(coalesce(wf.nota, wf.conceito_id), -1) as NotaEmAprovacao
+                                     from wf_aprovacao_nota_conselho wf
+                                    where wf.conselho_classe_nota_id = any(@idsConselhoClasseNota)
+                                      and not wf.excluido";
+
+            return await database.Conexao.QueryAsync<ConselhoClasseNotaAprovacaoDto>(query,
+                new { idsConselhoClasseNota = idsConselhoClasseNota.Distinct().ToArray() });
+        }
+
         public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoWf(long workFlowId)
         {
             const string query = @"select w.*, n.*, cca.*, cc.*, ft.*

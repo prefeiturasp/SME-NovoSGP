@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
@@ -17,40 +18,55 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPendenciaFechamento(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
-
+        
         public async Task<PaginacaoResultadoDto<PendenciaFechamentoResumoDto>> ListarPaginada(Paginacao paginacao, string turmaCodigo, int bimestre, long componenteCurricularId)
         {
             var retorno = new PaginacaoResultadoDto<PendenciaFechamentoResumoDto>();
 
-            var query = new StringBuilder(MontaQuery(paginacao, bimestre, componenteCurricularId, ordenar: true));
-            query.AppendLine(MontaQuery(paginacao, bimestre, componenteCurricularId, true));
+            var query = MontaQueryPaginadaComContagem(paginacao, bimestre, componenteCurricularId);
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { turmaCodigo, bimestre, componenteCurricularId }))
+            var parametros = new
             {
-                retorno.Items = multi.Read<PendenciaFechamentoResumoDto>().ToList();
-                retorno.TotalRegistros = multi.ReadFirst<int>();
-            }
-            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+                turmaCodigo,
+                bimestre,
+                componenteCurricularId,
+                quantidadeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
+                quantidadeRegistros = paginacao.QuantidadeRegistros
+            };
+
+            var itensComTotal = (await database.Conexao.QueryAsync<PendenciaFechamentoResumoComTotalDto>(query, parametros)).ToList();
+
+            retorno.TotalRegistros = itensComTotal.FirstOrDefault()?.TotalRegistros ?? 0;
+            retorno.Items = itensComTotal.Select(i => new PendenciaFechamentoResumoDto
+            {
+                PendenciaId = i.PendenciaId,
+                DisciplinaId = i.DisciplinaId,
+                Descricao = i.Descricao,
+                Situacao = i.Situacao
+            }).ToList();
+
+            retorno.TotalPaginas = paginacao.QuantidadeRegistros > 0
+                ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros)
+                : (retorno.TotalRegistros > 0 ? 1 : 0);
 
             return retorno;
         }
 
         public async Task<IEnumerable<PendenciaFechamento>> ObterPorFechamentoIdDisciplinaId(long fechamentoId, long disciplinaId)
         {
-            var query = @"select pf.fechamento_turma_disciplina_id as FechamentoTurmaDisciplinaId ,
-                            pf.pendencia_id as PendenciaId
-                            from pendencia_fechamento pf 
-                            inner join fechamento_turma_disciplina ftd on pf.fechamento_turma_disciplina_id = ftd.id 
-                            where disciplina_id = @disciplinaId and
-                            fechamento_turma_id = @fechamentoId";
+            const string query = @"select pf.fechamento_turma_disciplina_id as FechamentoTurmaDisciplinaId ,
+                             pf.pendencia_id as PendenciaId
+                             from pendencia_fechamento pf 
+                             inner join fechamento_turma_disciplina ftd on pf.fechamento_turma_disciplina_id = ftd.id 
+                             where disciplina_id = @disciplinaId and
+                             fechamento_turma_id = @fechamentoId";
 
             return await database.Conexao.QueryAsync<PendenciaFechamento>(query, new { fechamentoId, disciplinaId });
         }
 
         public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
         {
-
-                var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
+            const string query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
                                 , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre, pf.fechamento_turma_disciplina_id as FechamentoId
                                 , p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.criado_rf as CriadoRf, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRf,
                                   ft.turma_id as turmaId, 
@@ -63,12 +79,12 @@ namespace SME.SGP.Dados.Repositorios
                          inner join pendencia p on p.id = pf.pendencia_id
                          where p.id = @pendenciaId";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
         }
 
         public async Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId)
         {
-            var query = @"select t.* 
+            const string query = @"select t.* 
                           from pendencia_fechamento fp
                          inner join fechamento_turma_disciplina ftd on ftd.id = fp.fechamento_turma_disciplina_id
                          inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
@@ -99,7 +115,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public bool VerificaPendenciasAbertoPorFechamento(long fechamentoId)
         {
-            var query = @"select count(p.id)
+            const string query = @"select count(p.id)
                       from pendencia_fechamento pf
                      inner join pendencia p on p.id = pf.pendencia_id
                      where not p.excluido
@@ -126,42 +142,47 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, bimestre, componenteCurricularId });
         }
 
-        private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false, bool ordenar = false)
+        private static string MontaQueryPaginadaComContagem(Paginacao paginacao, int bimestre, long componenteCurricularId)
         {
-            var fields = contador ? "count(p.id)" : "p.id as PendenciaId, p.titulo as descricao, p.situacao, ftd.disciplina_id as DisciplinaId";
-            var query = new StringBuilder(string.Format(@"select {0}
-                                  from pendencia_fechamento pf
-                                 inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
-                                 inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
-                                 inner join turma t on t.id = ft.turma_id
-                                 inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
-                                 inner join pendencia p on p.id = pf.pendencia_id
-                                  where not p.excluido and not ftd.excluido
-                                    and t.turma_id = @turmaCodigo ", fields));
+            var query = new StringBuilder(@"select p.id as PendenciaId, p.titulo as descricao, p.situacao, ftd.disciplina_id as DisciplinaId,
+                       count(*) over() as TotalRegistros
+                  from pendencia_fechamento pf
+                 inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
+                 inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                 inner join turma t on t.id = ft.turma_id
+                 inner join pendencia p on p.id = pf.pendencia_id ");
+
+            if (bimestre > 0)
+                query.AppendLine(" inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id");
+
+            query.AppendLine(" where not p.excluido and not ftd.excluido and not ft.excluido");
+            query.AppendLine(" and t.turma_id = @turmaCodigo");
+
             if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre");
+
             if (componenteCurricularId > 0)
                 query.AppendLine(" and ftd.disciplina_id = @componenteCurricularId");
 
-            if (ordenar)
-                query.AppendLine(" order by p.situacao");
+            query.AppendLine(" order by p.situacao, p.id");
 
-            if (paginacao.QuantidadeRegistros > 0 && !contador)
-                query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY;");
-            
+            if (paginacao.QuantidadeRegistros > 0)
+                query.AppendLine(" OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY;");
+            else
+                query.AppendLine(";");
+
             return query.ToString();
         }
-
         public async Task<bool> ExistePendenciaFechamentoPorPendenciaId(long pendenciaId)
         {
-            var query = "select 1 from pendencia_fechamento where pendencia_id = @pendenciaId";
+            const string query = "select 1 from pendencia_fechamento where pendencia_id = @pendenciaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { pendenciaId });
         }
 
         public async Task<IEnumerable<PendenciaParaFechamentoConsolidadoDto>> ObterPendenciasParaFechamentoConsolidado(long turmaId, int bimestre, long componenteCurricularId)
         {
-            var query = @"select p.id as PendenciaId, 
+            const string query = @"select p.id as PendenciaId, 
                                  p.titulo as descricao, 
                                  P.tipo as tipoPendencia  
                             from pendencia_fechamento pf
@@ -182,7 +203,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<DetalhamentoPendenciaFechamentoConsolidadoDto> ObterDetalhamentoPendenciaFechamentoConsolidado(long pendenciaId)
         {
-            var query = @"select p.id as PendenciaId, 
+            const string query = @"select p.id as PendenciaId, 
                                  p.descricao as descricao, 
                                  p.descricao_html as descricaohtml,
                                  ftd.justificativa 
@@ -201,7 +222,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<DetalhamentoPendenciaAulaDto> ObterDetalhamentoPendenciaAula(long pendenciaId)
         {
-            var query = @"select P.id as pendenciaId,
+            const string query = @"select P.id as pendenciaId,
                                  p.tipo as tipoPendencia,
                                  p.descricao_html as descricaohtml                               
                             from pendencia_fechamento pf
@@ -219,8 +240,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<long>> ObterIdPendenciaFechamentoAprovadaResolvida(long fechamentoId, TipoPendencia tipoPendencia)
         {
-            var situacao = (int)SituacaoPendencia.Pendente;
-            var query = @"select pf.id          
+            const int situacao = (int)SituacaoPendencia.Pendente;
+            const string query = @"select pf.id          
                            from pendencia p
                            inner join pendencia_fechamento pf on pf.pendencia_id = p.id
                            where p.situacao <> @situacao 
