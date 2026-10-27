@@ -1,17 +1,17 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Elasticsearch.Net;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Cluster;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Nest;
 
 namespace SME.SGP.Infra
 {
     public class ElasticSearchCheck : IHealthCheck
     {
-        private readonly IElasticClient elasticClient;
+        private readonly ElasticsearchClient elasticClient;
 
-        public ElasticSearchCheck(IElasticClient elasticClient)
+        public ElasticSearchCheck(ElasticsearchClient elasticClient)
         {
             this.elasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
         }
@@ -30,7 +30,7 @@ namespace SME.SGP.Infra
 
         private async Task<HealthCheckResult> VerificarStatusElasticSearch(CancellationToken cancellationToken)
         {
-            var response = await elasticClient.Cluster.HealthAsync(new ClusterHealthRequest { WaitForStatus = WaitForStatus.Red }, cancellationToken);
+            var response = await elasticClient.Cluster.HealthAsync(new HealthRequest(), cancellationToken);
             var healthColor = response.Status.ToString();
 
             return healthColor.ToLower() switch
