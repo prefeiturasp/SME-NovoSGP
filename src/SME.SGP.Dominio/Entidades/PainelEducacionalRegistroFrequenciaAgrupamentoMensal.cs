@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SME.SGP.Dominio.Entidades
 {
+    [Table("painel_educacional_registro_frequencia_agrupamento_mensal")]
     public class PainelEducacionalRegistroFrequenciaAgrupamentoMensal
     {
         public string CodigoDre { get; set; }

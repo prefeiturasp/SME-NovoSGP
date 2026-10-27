@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Questionario;
 using System.Collections.Generic;
 

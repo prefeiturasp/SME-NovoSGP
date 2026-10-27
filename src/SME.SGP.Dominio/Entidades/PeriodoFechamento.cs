@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,11 +20,14 @@ namespace SME.SGP.Dominio
             FechamentosBimestre = new List<PeriodoFechamentoBimestre>();
         }
 
+       
         public Dre Dre { get; set; }
         public long? DreId { get; set; }
         public bool Migrado { get; set; }
+       
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
+       
         public List<PeriodoFechamentoBimestre> FechamentosBimestre { get; set; }
         public Aplicacao Aplicacao { get; set; }
         public void AdicionarDre(Dre dre)

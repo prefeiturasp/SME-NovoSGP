@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public PlanoAEEQuestaoMap()
         {
             ToTable("plano_aee_questao");
-            Map(c => c.PlanoAEEVersaoId).ToColumn("plano_aee_versao_id");
-            Map(c => c.QuestaoId).ToColumn("questao_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(PlanoAEEQuestao.PlanoAEEVersaoId), "plano_aee_versao_id");
+            Map(nameof(PlanoAEEQuestao.QuestaoId), "questao_id");
+            Map(nameof(PlanoAEEQuestao.Excluido), "excluido");
         }
     }
 }

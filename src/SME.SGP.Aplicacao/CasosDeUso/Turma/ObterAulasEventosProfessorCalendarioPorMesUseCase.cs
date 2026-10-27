@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,7 +87,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 aulasParaVisualizar = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor);
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, considerarVigenciaAtribuicao: true);
 
                 var codigosComponentesUsuario = componentesCurricularesEolProfessor.ObterCodigosEquivalentes();
 

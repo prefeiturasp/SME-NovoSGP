@@ -1,7 +1,10 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿
+
+namespace SME.SGP.Dominio.Entidades
 {
     public class ConsolidacaoAlfabetizacaoNivelEscrita
     {
+   
         public long Id { get; set; }
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }

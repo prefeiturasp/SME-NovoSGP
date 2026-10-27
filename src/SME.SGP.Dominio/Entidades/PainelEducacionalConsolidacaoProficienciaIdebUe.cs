@@ -1,10 +1,12 @@
-﻿using SME.SGP.Dominio.Enumerados;
+﻿
+using SME.SGP.Dominio.Enumerados;
 using System;
 
 namespace SME.SGP.Dominio.Entidades
 {
     public class PainelEducacionalConsolidacaoProficienciaIdebUe
     {
+   
         public int Id { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoUe { get; set; }

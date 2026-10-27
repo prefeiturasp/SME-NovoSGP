@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,10 +21,26 @@ namespace SME.SGP.Dominio
         public bool TerritorioSaber { get; set; }
         public bool BaseNacional { get; set; }
         public bool ExibirComponenteEOL { get; set; }
+       
         public GrupoMatriz GrupoMatriz { get; set; }
         public string TurmaCodigo { get; set; }
         public string Professor { get; set; }
         public long[] CodigosTerritoriosAgrupamento { get; set; }
+
+        public bool AtribuicaoAtiva { get; set; }
+        public DateTime? InicioAtribuicao { get; set; }
+        public DateTime? FimAtribuicao { get; set; }
+
+        public bool AtribuicaoAlcancaData(DateTime data)
+        {
+            if (AtribuicaoAtiva || (!InicioAtribuicao.HasValue && !FimAtribuicao.HasValue))
+                return true;
+
+            var dataReferencia = data.Date;
+
+            return (!InicioAtribuicao.HasValue || InicioAtribuicao.Value.Date <= dataReferencia)
+                && (!FimAtribuicao.HasValue || FimAtribuicao.Value.Date >= dataReferencia);
+        }
 
         public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, Modalidade turmaModalidade)
         => turmaModalidade.PossuiObjetivosAprendizagem()

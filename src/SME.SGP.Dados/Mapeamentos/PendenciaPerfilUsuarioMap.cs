@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,9 +8,9 @@ namespace SME.SGP.Dados
         public PendenciaPerfilUsuarioMap()
         {
             ToTable("pendencia_perfil_usuario");
-            Map(c => c.PendenciaPerfilId).ToColumn("pendencia_perfil_id");
-            Map(c => c.UsuarioId).ToColumn("usuario_id");
-            Map(c => c.PerfilCodigo).ToColumn("perfil_codigo");
+            Map(nameof(PendenciaPerfilUsuario.PendenciaPerfilId), "pendencia_perfil_id");
+            Map(nameof(PendenciaPerfilUsuario.UsuarioId), "usuario_id");
+            Map(nameof(PendenciaPerfilUsuario.PerfilCodigo), "perfil_codigo");
         }
     }
 }

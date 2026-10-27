@@ -89,7 +89,6 @@ namespace SME.SGP.IoC
             RegistrarAuditoria(services);
             RegistrarServicoArmazenamento(services, configuration);
 
-
             RegistrarMapeamentos.Registrar();
         }
 
@@ -132,6 +131,7 @@ namespace SME.SGP.IoC
             RegistrarServicoArmazenamento(services, configuration);
 
             RegistrarMapeamentos.Registrar();
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         private void RegistrarMetricas(IServiceCollection services)
@@ -589,7 +589,7 @@ namespace SME.SGP.IoC
 
             // Encaminhamento NAAPA
             services.TryAddScoped<IRepositorioSecaoEncaminhamentoNAAPA, RepositorioSecaoEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioEncaminhamentoNAAPA, RepositorioEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioEncaminhamentoNAAPA, RepositorioEncaminhamentoNaapa>();
             services.TryAddScoped<IRepositorioEncaminhamentoNAAPASecao, RepositorioEncaminhamentoNAAPASecao>();
             services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoEncaminhamentoNAAPA>();
             services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();

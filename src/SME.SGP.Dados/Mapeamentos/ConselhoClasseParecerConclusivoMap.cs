@@ -7,13 +7,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConselhoClasseParecerConclusivoMap()
         {
             ToTable("conselho_classe_parecer");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Aprovado).ToColumn("aprovado");
-            Map(c => c.Frequencia).ToColumn("frequencia");
-            Map(c => c.Nota).ToColumn("nota");
-            Map(c => c.Conselho).ToColumn("conselho");
-            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
+            Map(nameof(ConselhoClasseParecerConclusivo.Nome), "nome");
+            Map(nameof(ConselhoClasseParecerConclusivo.Aprovado), "aprovado");
+            Map(nameof(ConselhoClasseParecerConclusivo.Frequencia), "frequencia");
+            Map(nameof(ConselhoClasseParecerConclusivo.Nota), "nota");
+            Map(nameof(ConselhoClasseParecerConclusivo.Conselho), "conselho");
+            Map(nameof(ConselhoClasseParecerConclusivo.InicioVigencia), "inicio_vigencia");
+            Map(nameof(ConselhoClasseParecerConclusivo.FimVigencia), "fim_vigencia");
         }
     }
 }

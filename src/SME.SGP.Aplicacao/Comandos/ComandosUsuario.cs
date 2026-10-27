@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Queries.Abrangencia.VerificaSeUsuarioPossuiAbrangencia;
 using SME.SGP.Dominio;
@@ -99,21 +98,31 @@ namespace SME.SGP.Aplicacao
             if (usuarioAutenticacao == null)
                 return new UsuarioAutenticacaoRetornoDto();
 
-            var chaveCache = string.Format(NomeChaveCache.LOGIN, login);
-            var cacheLogin = repositorioCache.Obter(chaveCache);
+            if (usuarioAutenticacao.Status != AutenticacaoStatusEol.Ok && usuarioAutenticacao.Status != AutenticacaoStatusEol.SenhaPadrao)
+                return new UsuarioAutenticacaoRetornoDto();
 
-            if (cacheLogin.NaoEhNulo())
+            var chaveCache = string.Format(NomeChaveCache.LOGIN, login);
+
+            if (usuarioAutenticacao.Status == AutenticacaoStatusEol.Ok)
             {
-                var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
-                var token = ObterToken(usuarioAutenticacaoRetornoDto?.Token);
-                if (token > DateTime.Now)
-                    return usuarioAutenticacaoRetornoDto;
+                var cacheLogin = repositorioCache.Obter(chaveCache);
+
+                if (cacheLogin.NaoEhNulo())
+                {
+                    var usuarioAutenticacaoRetornoDto = JsonConvert.DeserializeObject<UsuarioAutenticacaoRetornoDto>(cacheLogin);
+                    var token = ObterToken(usuarioAutenticacaoRetornoDto?.Token);
+                    if (token > DateTime.Now && !usuarioAutenticacaoRetornoDto.ModificarSenha)
+                        return usuarioAutenticacaoRetornoDto;
+                }
             }
 
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(usuarioAutenticacao);
 
             var autenticacao = await ObterAutenticacao(retornoAutenticacaoEol, login);
-            await repositorioCache.SalvarAsync(chaveCache, autenticacao, 180);
+
+            if (autenticacao.Autenticado && !autenticacao.ModificarSenha)
+                await repositorioCache.SalvarAsync(chaveCache, autenticacao, 180);
+
             return autenticacao;
         }
 

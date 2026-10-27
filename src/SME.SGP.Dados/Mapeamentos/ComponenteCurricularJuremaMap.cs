@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public ComponenteCurricularJuremaMap()
         {
             ToTable("componente_curricular_jurema");
-            Map(c => c.CodigoEOL).ToColumn("codigo_eol");
-            Map(c => c.CodigoJurema).ToColumn("codigo_jurema");
-            Map(c => c.DescricaoEOL).ToColumn("descricao_eol");
+            Map(nameof(ComponenteCurricularJurema.CodigoEOL), "codigo_eol");
+            Map(nameof(ComponenteCurricularJurema.CodigoJurema), "codigo_jurema");
+            Map(nameof(ComponenteCurricularJurema.DescricaoEOL), "descricao_eol");
         }
     }
 }

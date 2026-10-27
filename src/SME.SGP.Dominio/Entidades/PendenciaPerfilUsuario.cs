@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class PendenciaPerfilUsuario : EntidadeBase
     {
@@ -10,10 +12,12 @@
             PerfilCodigo = perfilCodigo;
         }
 
+       
         public PendenciaPerfil PendenciaPerfil { get; set; }
         public long PendenciaPerfilId { get; set; }
         public PerfilUsuario PerfilCodigo { get; set; }
         public long UsuarioId { get; set; }
+       
         public Usuario Usuario { get; set; }
     }
 }

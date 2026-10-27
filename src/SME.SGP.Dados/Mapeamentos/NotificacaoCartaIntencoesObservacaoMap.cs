@@ -1,16 +1,14 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class NotificacaoCartaIntencoesObservacaoMap : DommelEntityMap<NotificacaoCartaIntencoesObservacao>
+    public class NotificacaoCartaIntencoesObservacaoMap : SimpleMap<NotificacaoCartaIntencoesObservacao>
     {
         public NotificacaoCartaIntencoesObservacaoMap()
         {
             ToTable("carta_intencoes_observacao_notificacao");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
-            Map(c => c.CartaIntencoesObservacaoId).ToColumn("observacao_id");
+            Map(nameof(NotificacaoCartaIntencoesObservacao.NotificacaoId), "notificacao_id");
+            Map(nameof(NotificacaoCartaIntencoesObservacao.CartaIntencoesObservacaoId), "observacao_id");
         }
     }
 }

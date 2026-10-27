@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class ConsolidacaoDevolutivas
     {
@@ -12,7 +14,7 @@
             QuantidadeEstimadaDevolutivas = quantidadeEstimadaDevolutivas;
             QuantidadeRegistradaDevolutivas = quantidadeRegistradaDevolutivas;
         }
-
+   
         public long Id { get; set; }
         public long TurmaId { get; set; }
 

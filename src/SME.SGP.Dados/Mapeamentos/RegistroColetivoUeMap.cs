@@ -7,8 +7,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public RegistroColetivoUeMap()
         {
             ToTable("registrocoletivo_ue");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.RegistroColetivoId).ToColumn("registrocoletivo_id");
+            Map(nameof(RegistroColetivoUe.UeId), "ue_id");
+            Map(nameof(RegistroColetivoUe.RegistroColetivoId), "registrocoletivo_id");
         }
     }
 }

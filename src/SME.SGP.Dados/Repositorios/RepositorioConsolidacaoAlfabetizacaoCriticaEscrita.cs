@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> SalvarConsolidacaoAlfabetizacaoCriticaEscrita(ConsolidacaoAlfabetizacaoCriticaEscrita entidade)
         {
-            return (long)(await database.Conexao.InsertAsync(entidade)) > 0;
+            return (await database.Conexao.InsertMappedAsync(entidade)) > 0;
         }
         public async Task<IEnumerable<ConsolidacaoAlfabetizacaoCriticaEscrita>> ObterNumeroEstudantes(string codigoDre, string codigoUe)
         {

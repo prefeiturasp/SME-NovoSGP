@@ -8,9 +8,9 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("relatorio_periodico_pap_turma");
 
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.PeriodoRelatorioId).ToColumn("periodo_relatorio_pap_id");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(RelatorioPeriodicoPAPTurma.TurmaId), "turma_id");
+            Map(nameof(RelatorioPeriodicoPAPTurma.PeriodoRelatorioId), "periodo_relatorio_pap_id");
+            Map(nameof(RelatorioPeriodicoPAPTurma.Excluido), "excluido");
         }
     }
 }

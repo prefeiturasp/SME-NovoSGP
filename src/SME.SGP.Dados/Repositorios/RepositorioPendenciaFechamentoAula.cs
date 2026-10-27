@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task SalvarAsync(PendenciaFechamentoAula entidade)
         {
-            await database.Conexao.InsertAsync(entidade);
+            await database.Conexao.InsertMappedAsync(entidade);
         }
     }
 }

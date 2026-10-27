@@ -1,13 +1,9 @@
 ﻿using MediatR;
-using MongoDB.Bson.Serialization.IdGenerators;
-using Npgsql.Replication;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -92,7 +88,7 @@ namespace SME.SGP.Aplicacao
                 if (usuarioLogado.EhSomenteProfessorCj())
                     componentesCurricularesEolProfessor.AddRange(await ObterComponentesCurricularesProfessorCJ(usuarioLogado.Login));               
 
-                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor);
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor, considerarVigenciaAtribuicao: true);
             }
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();

@@ -8,12 +8,12 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("secao_relatorio_periodico_pap");
 
-            Map(c => c.QuestionarioId).ToColumn("questionario_id");
-            Map(c => c.NomeComponente).ToColumn("nome_componente");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Ordem).ToColumn("ordem");
-            Map(c => c.Etapa).ToColumn("etapa");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(SecaoRelatorioPeriodicoPAP.QuestionarioId), "questionario_id");
+            Map(nameof(SecaoRelatorioPeriodicoPAP.NomeComponente), "nome_componente");
+            Map(nameof(SecaoRelatorioPeriodicoPAP.Nome), "nome");
+            Map(nameof(SecaoRelatorioPeriodicoPAP.Ordem), "ordem");
+            Map(nameof(SecaoRelatorioPeriodicoPAP.Etapa), "etapa");
+            Map(nameof(SecaoRelatorioPeriodicoPAP.Excluido), "excluido");
         }
     }
 }
