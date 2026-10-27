@@ -130,8 +130,6 @@ namespace SME.SGP.Aplicacao
             if (turmasCodigos.Count > 0)
                 turmasCodigos = await mediator.Send(new ObterTurmasConsideradasNoConselhoQuery(turmasCodigos, turma));
 
-            var notasConselhoEmAprovacao = await ObterNotasConselhoEmAprovacao(notasConselhoClasseAluno, turmasCodigos);
-
             //Verificar as notas finais
             var notasFechamentoAluno = Enumerable.Empty<NotaConceitoBimestreComponenteDto>();
             var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(notasFrequenciaDto.CodigoTurma, turma.AnoLetivo, null, true));
