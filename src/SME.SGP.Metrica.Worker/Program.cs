@@ -80,6 +80,8 @@ public class Program
 
         var app = builder.Build();
 
+        DapperExtensionMethods.Init(app.Services.GetRequiredService<IServicoTelemetria>());
+
         // Elastic APM
         app.UseElasticApm(
             builder.Configuration,
