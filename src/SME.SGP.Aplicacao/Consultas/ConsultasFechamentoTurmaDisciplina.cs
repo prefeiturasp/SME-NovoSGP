@@ -241,6 +241,7 @@ namespace SME.SGP.Aplicacao
                 var notasEmAprovacao = exigeAprovacao
                     ? (await mediator.Send(new ObterNotasEmAprovacaoQuery(codigosAlunos, fechamentosTurmasAlunos.Select(x => x.FechamentoTurmaId).Distinct().ToArray()))).ToList()
                     : new List<NotaEmAprovacaoFechamentoDto>();
+
                 var frequenciasAlunos = await mediator
                     .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(codigosAlunos, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, turmaId, disciplinaId.ToString()));
 
