@@ -65,7 +65,52 @@ namespace SME.SGP.Dados.Repositorios
                     return secao;
                 }, new { id });
 
-            return relatorioSecao;
+            if (relatorioSecao.Id == 0)
+            {
+                const string querySecao = @"select id,
+                                                   relatorio_periodico_pap_aluno_id RelatorioPeriodicoAlunoId,
+                                                   secao_relatorio_periodico_pap_id SecaoRelatorioPeriodicoId,
+                                                   concluido,
+                                                   excluido,
+                                                   criado_em CriadoEm,
+                                                   criado_por CriadoPor,
+                                                   criado_rf CriadoRF,
+                                                   alterado_em AlteradoEm,
+                                                   alterado_por AlteradoPor,
+                                                   alterado_rf AlteradoRF
+                                              from relatorio_periodico_pap_secao
+                                             where id = @id
+                                               and not excluido";
+
+                relatorioSecao = await database.Conexao
+                    .QueryFirstOrDefaultAsync<RelatorioPeriodicoPAPSecao>(querySecao, new { id });
+            }
+
+            return relatorioSecao ?? new RelatorioPeriodicoPAPSecao();
+        }
+
+        public Task<long?> ObterIdSecaoAtiva(long relatorioAlunoId, long secaoRelatorioPeriodicoId)
+        {
+            const string query = @"select rpps.id
+                                     from relatorio_periodico_pap_secao rpps
+                                    where rpps.relatorio_periodico_pap_aluno_id = @relatorioAlunoId
+                                      and rpps.secao_relatorio_periodico_pap_id = @secaoRelatorioPeriodicoId
+                                      and not rpps.excluido
+                                    order by exists (
+                                                 select 1
+                                                   from relatorio_periodico_pap_questao rppq
+                                                   join relatorio_periodico_pap_resposta rppr
+                                                     on rppr.relatorio_periodico_pap_questao_id = rppq.id
+                                                    and not rppr.excluido
+                                                  where rppq.relatorio_periodico_pap_secao_id = rpps.id
+                                                    and not rppq.excluido
+                                             ) desc,
+                                             coalesce(rpps.alterado_em, rpps.criado_em) desc,
+                                             rpps.id desc
+                                    limit 1";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<long?>(query,
+                new { relatorioAlunoId, secaoRelatorioPeriodicoId });
         }
     }
 }

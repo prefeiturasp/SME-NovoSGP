@@ -37,6 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                         alunoTurma.PAPSecaoId, 
                         case when alunoTurma.concluido is null and (select * from vw_relatorio_anterior_existente) = 0 then false else true end Concluido,
                         alunoTurma.PAPTurmaId, alunoTurma.PAPAlunoId,
+                        alunoTurma.QuantidadeSecoesPersistidas,
                         alunoTurma.id,
                         alunoTurma.AlteradoEm,
                         alunoTurma.AlteradoPor,
@@ -49,12 +50,16 @@ namespace SME.SGP.Dados.Repositorios
                         inner join questionario q on q.id = srpp.questionario_id 
                         inner join periodo_relatorio_pap prp on prp.configuracao_relatorio_pap_id = scrpp.configuracao_relatorio_pap_id 
                         left join questao on questao.questionario_id = q.id and questao.obrigatorio = true
-                        left join (select  
+                        left join (select distinct on (rppt.periodo_relatorio_pap_id, rpps.secao_relatorio_periodico_pap_id)
                                     rpps.concluido,
                                     rpps.id PAPSecaoId, 
                                     rpps.secao_relatorio_periodico_pap_id,
                                     rppt.periodo_relatorio_pap_id,
                                     rppt.id PAPTurmaId, rppa.id PAPAlunoId,
+                                    count(*) over (
+                                        partition by rppt.periodo_relatorio_pap_id,
+                                                     rpps.secao_relatorio_periodico_pap_id
+                                    ) QuantidadeSecoesPersistidas,
                                     rpps.id,
                                     rpps.Alterado_Em as AlteradoEm,
                                     rpps.Alterado_Por as AlteradoPor,
@@ -66,7 +71,22 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join turma t on t.id = rppt.turma_id 
                                     inner join relatorio_periodico_pap_aluno rppa on rppa.relatorio_periodico_pap_turma_id = rppt.id 
                                     inner join relatorio_periodico_pap_secao rpps on rpps.relatorio_periodico_pap_aluno_id = rppa.id 
-                                    where t.turma_id = @codigoTurma and rppa.aluno_codigo = @codigoAluno) 
+                                    where t.turma_id = @codigoTurma
+                                      and rppa.aluno_codigo = @codigoAluno
+                                      and not rpps.excluido
+                                    order by rppt.periodo_relatorio_pap_id,
+                                             rpps.secao_relatorio_periodico_pap_id,
+                                             exists (
+                                                 select 1
+                                                   from relatorio_periodico_pap_questao rppq
+                                                   join relatorio_periodico_pap_resposta rppr
+                                                     on rppr.relatorio_periodico_pap_questao_id = rppq.id
+                                                    and not rppr.excluido
+                                                  where rppq.relatorio_periodico_pap_secao_id = rpps.id
+                                                    and not rppq.excluido
+                                             ) desc,
+                                             coalesce(rpps.alterado_em, rpps.criado_em) desc,
+                                             rpps.id desc)
                         alunoTurma on alunoTurma.periodo_relatorio_pap_id = prp.id and alunoTurma.secao_relatorio_periodico_pap_id = srpp.id
                         where prp.id = @pAPPeriodoId 
                         order by ordem";
