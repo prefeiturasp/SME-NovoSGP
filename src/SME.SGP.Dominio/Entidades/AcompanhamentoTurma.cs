@@ -1,7 +1,10 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class AcompanhamentoTurma : EntidadeBase
     {
+       
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
 

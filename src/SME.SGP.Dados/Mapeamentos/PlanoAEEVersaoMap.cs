@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,9 +8,9 @@ namespace SME.SGP.Dados
         public PlanoAEEVersaoMap()
         {
             ToTable("plano_aee_versao");
-            Map(c => c.PlanoAEEId).ToColumn("plano_aee_id");
-            Map(c => c.Numero).ToColumn("numero");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(PlanoAEEVersao.PlanoAEEId), "plano_aee_id");
+            Map(nameof(PlanoAEEVersao.Numero), "numero");
+            Map(nameof(PlanoAEEVersao.Excluido), "excluido");
         }
     }
 }

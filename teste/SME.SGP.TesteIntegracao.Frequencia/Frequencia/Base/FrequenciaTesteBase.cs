@@ -151,7 +151,9 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarDadosBaseSemTurma(perfil, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
             await CriarTurma(modalidade);
-            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
+            var aulas = ObterTodos<Dominio.Aula>();
+            if(!aulas.Any())
+             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
             await CriarParametrosSistema(dataFim.Year);
@@ -161,7 +163,9 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarDadosBaseSemTurma(perfil, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
             await CriarTurma(modalidade);
-            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula);
+            var aulas = ObterTodos<Dominio.Aula>();
+            if(!aulas.Any())
+                await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula);
             await CriarAulaRecorrente(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula, quantidadeRecorrencia);
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
@@ -266,7 +270,7 @@ namespace SME.SGP.TesteIntegracao
                 DataAula = dataAula,
                 RecorrenciaAula = recorrencia,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,

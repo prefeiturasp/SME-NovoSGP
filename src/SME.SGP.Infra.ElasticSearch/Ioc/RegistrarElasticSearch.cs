@@ -1,7 +1,7 @@
-﻿using Elasticsearch.Net;
+﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Transport;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nest;
 using System;
 using System.Collections.Generic;
 
@@ -22,29 +22,31 @@ namespace SME.SGP.Infra.ElasticSearch
 
             var nodes = new List<Uri>();
             var elasticOptions = configElastic.Get<ElasticOptions>();
+
             if (elasticOptions.Urls.Contains(','))
             {
-                string[] urls = elasticOptions.Urls.Split(',');
-                foreach (string url in urls)
+                foreach (string url in elasticOptions.Urls.Split(','))
                     nodes.Add(new Uri(url));
             }
             else
             {
                 nodes.Add(new Uri(elasticOptions.Urls));
             }
-            var connectionPool = new StaticConnectionPool(nodes);
-            var connectionSettings = new ConnectionSettings(connectionPool);
-            connectionSettings.ServerCertificateValidationCallback((sender, cert, chain, errors) => true);
-            connectionSettings.DefaultIndex(elasticOptions.IndicePadrao);
+
+            var nodePool = new StaticNodePool(nodes);
+
+            var settings = new ElasticsearchClientSettings(nodePool)
+                .DefaultIndex(elasticOptions.IndicePadrao)
+                .ServerCertificateValidationCallback((sender, cert, chain, errors) => true);
 
             if (!string.IsNullOrEmpty(elasticOptions.CertificateFingerprint))
-                connectionSettings.CertificateFingerprint(elasticOptions.CertificateFingerprint);
+                settings = settings.CertificateFingerprint(elasticOptions.CertificateFingerprint);
 
             if (!string.IsNullOrEmpty(elasticOptions.Usuario) && !string.IsNullOrEmpty(elasticOptions.Senha))
-                connectionSettings.BasicAuthentication(elasticOptions.Usuario, elasticOptions.Senha);
+                settings = settings.Authentication(new BasicAuthentication(elasticOptions.Usuario, elasticOptions.Senha));
 
-            var elasticClient = new ElasticClient(connectionSettings);
-            services.AddSingleton<IElasticClient>(elasticClient);
+            var elasticClient = new ElasticsearchClient(settings);
+            services.AddSingleton<ElasticsearchClient>(elasticClient);
         }
     }
 }

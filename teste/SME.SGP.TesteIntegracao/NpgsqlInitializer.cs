@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace SME.SGP.TesteIntegracao
@@ -8,6 +9,7 @@ namespace SME.SGP.TesteIntegracao
         [ModuleInitializer]
         public static void Initialize()
         {
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
     }

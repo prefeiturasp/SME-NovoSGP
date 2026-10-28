@@ -212,7 +212,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             compensacoesCompensacaoAusenciaAlunos.Any(a=> !a.Excluido).ShouldBeTrue();
             compensacoesCompensacaoAusenciaAlunos.Any(a=> a.Excluido).ShouldBeFalse();
             compensacoesCompensacaoAusenciaAlunos.FirstOrDefault().QuantidadeFaltasCompensadas.Equals(1).ShouldBeTrue();
-            
+
             var compensacaoAusenciaAlunoAula = ObterTodos<Dominio.CompensacaoAusenciaAlunoAula>();
             compensacaoAusenciaAlunoAula.Count().Equals(3).ShouldBeTrue();
             compensacaoAusenciaAlunoAula.Count(a=> a.Excluido).Equals(2).ShouldBeTrue();

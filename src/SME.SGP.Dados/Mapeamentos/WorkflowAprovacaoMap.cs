@@ -7,16 +7,16 @@ namespace SME.SGP.Dados.Mapeamentos
         public WorkflowAprovacaoMap()
         {
             ToTable("wf_aprovacao");
-            Map(c => c.Ano).ToColumn("ano");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.NotifacaoMensagem).ToColumn("notificacao_mensagem");
-            Map(c => c.NotifacaoTitulo).ToColumn("notificacao_titulo");
-            Map(c => c.NotificacaoCategoria).ToColumn("notificacao_categoria");
-            Map(c => c.NotificacaoTipo).ToColumn("notificacao_tipo");
-            Map(c => c.Tipo).ToColumn("tipo");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.UeId).ToColumn("ue_id");
+            Map(nameof(WorkflowAprovacao.Ano), "ano");
+            Map(nameof(WorkflowAprovacao.Excluido), "excluido");
+            Map(nameof(WorkflowAprovacao.DreId), "dre_id");
+            Map(nameof(WorkflowAprovacao.NotifacaoMensagem), "notificacao_mensagem");
+            Map(nameof(WorkflowAprovacao.NotifacaoTitulo), "notificacao_titulo");
+            Map(nameof(WorkflowAprovacao.NotificacaoCategoria), "notificacao_categoria");
+            Map(nameof(WorkflowAprovacao.NotificacaoTipo), "notificacao_tipo");
+            Map(nameof(WorkflowAprovacao.Tipo), "tipo");
+            Map(nameof(WorkflowAprovacao.TurmaId), "turma_id");
+            Map(nameof(WorkflowAprovacao.UeId), "ue_id");
         }
     }
 }

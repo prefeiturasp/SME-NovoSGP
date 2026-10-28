@@ -7,13 +7,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotaParametroMap()
         {
             ToTable("notas_parametros");
-            Map(c => c.Ativo).ToColumn("ativo");
-            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
-            Map(c => c.Incremento).ToColumn("incremento");
-            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(c => c.Maxima).ToColumn("valor_maximo");
-            Map(c => c.Media).ToColumn("valor_medio");
-            Map(c => c.Minima).ToColumn("valor_minimo");
+            Map(nameof(NotaParametro.Ativo), "ativo");
+            Map(nameof(NotaParametro.FimVigencia), "fim_vigencia");
+            Map(nameof(NotaParametro.Incremento), "incremento");
+            Map(nameof(NotaParametro.InicioVigencia), "inicio_vigencia");
+            Map(nameof(NotaParametro.Maxima), "valor_maximo");
+            Map(nameof(NotaParametro.Media), "valor_medio");
+            Map(nameof(NotaParametro.Minima), "valor_minimo");
         }
     }
 }

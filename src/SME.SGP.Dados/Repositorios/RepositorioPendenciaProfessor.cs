@@ -1,5 +1,4 @@
-﻿using Dommel;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -47,7 +46,7 @@ namespace SME.SGP.Dados
         }
 
         public Task<long> Inserir(long pendenciaId, long turmaId, long componenteCurricularId, string professorRf, long? periodoEscolarId)
-            => Task.FromResult((long)database.Conexao.Insert(new PendenciaProfessor(pendenciaId, turmaId, componenteCurricularId, professorRf, periodoEscolarId)));
+            => database.Conexao.InsertMappedAsync(new PendenciaProfessor(pendenciaId, turmaId, componenteCurricularId, professorRf, periodoEscolarId));
 
         public async Task<long> ObterPendenciaIdPorTurma(long turmaId, TipoPendencia tipoPendencia)
         {
@@ -120,7 +119,7 @@ namespace SME.SGP.Dados
 
         public async Task Remover(PendenciaProfessor pendenciaProfessor)
         {
-            await database.Conexao.DeleteAsync(pendenciaProfessor);
+            await database.Conexao.DeleteMappedAsync(pendenciaProfessor);
             await Auditar(pendenciaProfessor.Id, "E");
         }
 

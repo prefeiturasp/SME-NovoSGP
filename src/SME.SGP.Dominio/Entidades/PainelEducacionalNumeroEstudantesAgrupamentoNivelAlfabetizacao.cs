@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace SME.SGP.Dominio.Entidades
 {
     [Table("consolidacao_alfabetizacao_nivel_escrita")]

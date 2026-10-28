@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> SalvarAsync(HistoricoNotaFechamento entidade)
         {
-            entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+            entidade.Id = (await database.Conexao.InsertMappedAsync(entidade));
 
             return entidade.Id;
         }

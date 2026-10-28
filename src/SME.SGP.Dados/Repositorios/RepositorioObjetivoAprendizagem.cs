@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
                 try
                 {
                     await conexao.OpenAsync();
-                    await conexao.UpdateAsync(objetivoAprendizagem);
+                    await conexao.UpdateMappedAsync(objetivoAprendizagem);
                 }
                 finally
                 {

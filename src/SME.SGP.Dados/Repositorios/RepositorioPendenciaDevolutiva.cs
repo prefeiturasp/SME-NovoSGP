@@ -20,7 +20,7 @@ namespace SME.SGP.Dados
 
         public async Task Salvar(PendenciaDevolutiva pendenciaDevolutiva)
         {
-            await database.Conexao.InsertAsync(pendenciaDevolutiva);
+            await database.Conexao.InsertMappedAsync(pendenciaDevolutiva);
         }
 
         public async Task ExcluirPorTurmaComponente(long turmaId, long componenteId)

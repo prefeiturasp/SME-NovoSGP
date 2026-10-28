@@ -1,100 +1,219 @@
 ﻿using Dapper;
-using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioDreConsulta : IRepositorioDreConsulta
+    public class RepositorioDreConsulta
+        : IRepositorioDreConsulta
     {
-        private const string QuerySincronizacao = @"SELECT id, dre_id, abreviacao, nome, data_atualizacao FROM public.dre where dre_id in (#ids);";
+        private const string ColunasDre = @"
+            d.id AS Id,
+            d.dre_id AS CodigoDre,
+            d.abreviacao AS Abreviacao,
+            d.nome AS Nome,
+            d.data_atualizacao AS DataAtualizacao";
+
+        private const string QuerySincronizacao = @"
+            SELECT
+                d.id AS Id,
+                d.dre_id AS CodigoDre,
+                d.abreviacao AS Abreviacao,
+                d.nome AS Nome,
+                d.data_atualizacao AS DataAtualizacao
+            FROM public.dre d
+            WHERE d.dre_id IN (#ids);";
 
         private readonly ISgpContextConsultas contexto;
 
-        public RepositorioDreConsulta(ISgpContextConsultas contexto)
+        public RepositorioDreConsulta(
+            ISgpContextConsultas contexto)
         {
             this.contexto = contexto;
         }
 
-        public IEnumerable<Dre> ListarPorCodigos(string[] dresCodigos)
+        public IEnumerable<Dre> ListarPorCodigos(
+            string[] dresCodigos)
         {
-            var query = "select id, dre_id, abreviacao, nome from dre d where d.dre_id = ANY(@dresCodigos)";
+            var query = $@"
+                SELECT
+                    {ColunasDre}
+                FROM dre d
+                WHERE d.dre_id = ANY(@dresCodigos);";
 
-            return contexto.Conexao.Query<Dre>(query, new { dresCodigos });
+            return contexto.Conexao.Query<Dre>(
+                query,
+                new { dresCodigos });
         }
 
-        public async Task<IEnumerable<Dre>> ListarPorCodigosAsync(string[] dresCodigos)
+        public async Task<IEnumerable<Dre>>
+            ListarPorCodigosAsync(
+                string[] dresCodigos)
         {
-            var query = "select id, dre_id, abreviacao, nome from dre d where d.dre_id = ANY(@dresCodigos)";
+            var query = $@"
+                SELECT
+                    {ColunasDre}
+                FROM dre d
+                WHERE d.dre_id = ANY(@dresCodigos);";
 
-            return await contexto.Conexao.QueryAsync<Dre>(query, new { dresCodigos });
+            return await contexto.Conexao
+                .QueryAsync<Dre>(
+                    query,
+                    new { dresCodigos });
         }
 
-        public (IEnumerable<Dre> Dres,string[] CodigosDresNaoEncontrados) MaterializarCodigosDre(string[] idDres)
+        public (
+            IEnumerable<Dre> Dres,
+            string[] CodigosDresNaoEncontrados)
+            MaterializarCodigosDre(
+                string[] idDres)
         {
-            string[] naoEncontradas;
+            var sql = QuerySincronizacao.Replace(
+                "#ids",
+                string.Join(
+                    ",",
+                    idDres.Select(
+                        codigo => $"'{codigo}'")));
 
-            var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", idDres.Select(x => $"'{x}'"))));
+            var armazenados =
+                contexto.Conexao.Query<Dre>(sql);
 
-            naoEncontradas = idDres.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x)).ToArray();
+            var codigosArmazenados =
+                armazenados
+                    .Select(dre => dre.CodigoDre)
+                    .ToHashSet();
 
-            return (armazenados, naoEncontradas);
+            var naoEncontradas =
+                idDres
+                    .Where(codigo =>
+                        !codigosArmazenados.Contains(codigo))
+                    .ToArray();
+
+            return (
+                armazenados,
+                naoEncontradas);
         }
 
-        public async Task<string> ObterCodigoDREPorTurmaId(long turmaId)
+        public async Task<string>
+            ObterCodigoDREPorTurmaId(
+                long turmaId)
         {
-            var query = @"select dre.dre_id 
-                          from turma t
-                         inner join ue on ue.id = t.ue_id
-                         inner join dre on dre.id = ue.dre_id
-                         where t.id = @turmaId";
+            const string query = @"
+                SELECT d.dre_id
+                FROM turma t
+                INNER JOIN ue u
+                    ON u.id = t.ue_id
+                INNER JOIN dre d
+                    ON d.id = u.dre_id
+                WHERE t.id = @turmaId;";
 
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { turmaId });
+            return await contexto.Conexao
+                .QueryFirstOrDefaultAsync<string>(
+                    query,
+                    new { turmaId });
         }
 
-        public async Task<string> ObterCodigoDREPorUEId(long ueId)
+        public async Task<string>
+            ObterCodigoDREPorUEId(
+                long ueId)
         {
-            var query = @"select dre.dre_id 
-                          from ue 
-                         inner join dre on dre.id = ue.dre_id
-                         where ue.id = @ueId";
+            const string query = @"
+                SELECT d.dre_id
+                FROM ue u
+                INNER JOIN dre d
+                    ON d.id = u.dre_id
+                WHERE u.id = @ueId;";
 
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { ueId });
+            return await contexto.Conexao
+                .QueryFirstOrDefaultAsync<string>(
+                    query,
+                    new { ueId });
         }
 
-        public async Task<long> ObterIdDrePorCodigo(string codigo)
+        public async Task<long>
+            ObterIdDrePorCodigo(
+                string codigo)
         {
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>("select Id from dre where dre_id = @codigo", new { codigo });
+            const string query = @"
+                SELECT d.id
+                FROM dre d
+                WHERE d.dre_id = @codigo;";
+
+            return await contexto.Conexao
+                .QueryFirstOrDefaultAsync<long>(
+                    query,
+                    new { codigo });
         }
 
-        public async Task<Dre> ObterPorCodigo(string codigo)
+        public async Task<Dre> ObterPorCodigo(
+            string codigo)
         {
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<Dre>("select * from dre where dre_id = @codigo", new { codigo });
+            var query = $@"
+                SELECT
+                    {ColunasDre}
+                FROM dre d
+                WHERE d.dre_id = @codigo;";
+
+            return await contexto.Conexao
+                .QueryFirstOrDefaultAsync<Dre>(
+                    query,
+                    new { codigo });
         }
 
         public Dre ObterPorId(long dreId)
         {
-            return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where id = @dreId", new { dreId });
+            var query = $@"
+                SELECT
+                    {ColunasDre}
+                FROM dre d
+                WHERE d.id = @dreId;";
+
+            return contexto.Conexao
+                .QueryFirstOrDefault<Dre>(
+                    query,
+                    new { dreId });
         }
 
-        public async Task<Dre> ObterPorIdAsync(long dreId)
+        public async Task<Dre> ObterPorIdAsync(
+            long dreId)
         {
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<Dre>("select * from dre where id = @dreId", new { dreId });
+            var query = $@"
+                SELECT
+                    {ColunasDre}
+                FROM dre d
+                WHERE d.id = @dreId;";
+
+            return await contexto.Conexao
+                .QueryFirstOrDefaultAsync<Dre>(
+                    query,
+                    new { dreId });
         }
 
-        public async Task<IEnumerable<Dre>> ObterTodas()
+        public async Task<IEnumerable<Dre>>
+            ObterTodas()
         {
-            return await contexto.Conexao.QueryAsync<Dre>("select id, dre_id, abreviacao, nome from dre");
+            var query = $@"
+                SELECT
+                    {ColunasDre}
+                FROM dre d;";
+
+            return await contexto.Conexao
+                .QueryAsync<Dre>(query);
         }
 
-        public async Task<IEnumerable<long>> ObterIdsDresAsync()
+        public async Task<IEnumerable<long>>
+            ObterIdsDresAsync()
         {
-            return await contexto.Conexao.QueryAsync<long>("select Id from dre ", new { });
+            const string query = @"
+                SELECT d.id
+                FROM dre d;";
+
+            return await contexto.Conexao
+                .QueryAsync<long>(query);
         }
     }
 }

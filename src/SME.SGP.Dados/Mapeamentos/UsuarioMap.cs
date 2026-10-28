@@ -7,13 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public UsuarioMap()
         {
             ToTable("usuario");
-            Map(a => a.PerfilAtual).Ignore();
-            Map(c => c.CodigoRf).ToColumn("rf_codigo");
-            Map(c => c.ExpiracaoRecuperacaoSenha).ToColumn("expiracao_recuperacao_senha");
-            Map(c => c.Login).ToColumn("login");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.TokenRecuperacaoSenha).ToColumn("token_recuperacao_senha");
-            Map(c => c.UltimoLogin).ToColumn("ultimo_login");
+            Map(nameof(Usuario.CodigoRf), "rf_codigo");
+            Map(nameof(Usuario.ExpiracaoRecuperacaoSenha), "expiracao_recuperacao_senha");
+            Map(nameof(Usuario.Login), "login");
+            Map(nameof(Usuario.Nome), "nome");
+            Map(nameof(Usuario.TokenRecuperacaoSenha), "token_recuperacao_senha");
+            Map(nameof(Usuario.UltimoLogin), "ultimo_login");
         }
     }
 }

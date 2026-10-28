@@ -131,18 +131,85 @@ namespace SME.SGP.Dados.Repositorios
         private string ObterQueryInforme()
         {
             var sql = new StringBuilder();
-            sql.AppendLine(@"SELECT inf.id, inf.titulo, inf.texto, inf.data_envio,
-                            inf.criado_em, inf.criado_por, inf.alterado_em, inf.dre_id, inf.ue_id,
-                            inf.alterado_por, inf.criado_rf, inf.alterado_rf,
-                            dre.id, dre.nome, dre.abreviacao, dre.dre_id as CodigoDre,
-                            ue.id, ue.nome, ue.tipo_escola, ue.ue_id as CodigoUe,
-                            inf_p.id, inf_p.informativo_id, inf_p.codigo_perfil,
-                            inf_m.id, inf_m.informativo_id, inf_m.modalidade_codigo
-                            FROM informativo inf
-                            INNER JOIN informativo_perfil inf_p ON inf_p.informativo_id = inf.id
-                            LEFT JOIN informativo_modalidade inf_m ON inf_m.informativo_id = inf.id
-                            LEFT JOIN dre ON dre.id = inf.dre_id
-                            LEFT JOIN ue ON ue.id = inf.ue_id ");
+
+            sql.AppendLine(@"
+                SELECT
+                    -- Informativo
+                    inf.id AS Id,
+                    inf.criado_em AS CriadoEm,
+                    inf.criado_por AS CriadoPor,
+                    inf.alterado_em AS AlteradoEm,
+                    inf.alterado_por AS AlteradoPor,
+                    inf.criado_rf AS CriadoRF,
+                    inf.alterado_rf AS AlteradoRF,
+                    inf.dre_id AS DreId,
+                    inf.ue_id AS UeId,
+                    inf.titulo AS Titulo,
+                    inf.texto AS Texto,
+                    inf.data_envio AS DataEnvio,
+                    inf.excluido AS Excluido,
+
+                    -- início do objeto Dre
+                    dre.id AS DreInicio,
+
+                    -- Dre
+                    dre.id AS Id,
+                    dre.abreviacao AS Abreviacao,
+                    dre.dre_id AS CodigoDre,
+                    dre.data_atualizacao AS DataAtualizacao,
+                    dre.nome AS Nome,
+
+                    -- início do objeto Ue
+                    ue.id AS UeInicio,
+
+                    -- Ue
+                    ue.id AS Id,
+                    ue.ue_id AS CodigoUe,
+                    ue.data_atualizacao AS DataAtualizacao,
+                    ue.dre_id AS DreId,
+                    ue.nome AS Nome,
+                    ue.tipo_escola AS TipoEscola,
+
+                    -- início do InformativoPerfil
+                    inf_p.id AS InformativoPerfilInicio,
+
+                    -- InformativoPerfil
+                    inf_p.id AS Id,
+                    inf_p.criado_em AS CriadoEm,
+                    inf_p.criado_por AS CriadoPor,
+                    inf_p.alterado_em AS AlteradoEm,
+                    inf_p.alterado_por AS AlteradoPor,
+                    inf_p.criado_rf AS CriadoRF,
+                    inf_p.alterado_rf AS AlteradoRF,
+                    inf_p.informativo_id AS InformativoId,
+                    inf_p.codigo_perfil AS CodigoPerfil,
+                    inf_p.excluido AS Excluido,
+
+                    -- início do InformativoModalidade
+                    inf_m.id AS InformativoModalidadeInicio,
+
+                    -- InformativoModalidade
+                    inf_m.id AS Id,
+                    inf_m.criado_em AS CriadoEm,
+                    inf_m.criado_por AS CriadoPor,
+                    inf_m.alterado_em AS AlteradoEm,
+                    inf_m.alterado_por AS AlteradoPor,
+                    inf_m.criado_rf AS CriadoRF,
+                    inf_m.alterado_rf AS AlteradoRF,
+                    inf_m.informativo_id AS InformativoId,
+                    inf_m.modalidade_codigo AS Modalidade
+
+                FROM informativo inf
+                INNER JOIN informativo_perfil inf_p
+                    ON inf_p.informativo_id = inf.id
+                   AND NOT inf_p.excluido
+                LEFT JOIN informativo_modalidade inf_m
+                    ON inf_m.informativo_id = inf.id
+                LEFT JOIN dre
+                    ON dre.id = inf.dre_id
+                LEFT JOIN ue
+                    ON ue.id = inf.ue_id
+            ");
 
             return sql.ToString();
         }

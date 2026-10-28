@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Inserir(long notificacaoId, long aulaId)
         {
-            await database.Conexao.InsertAsync(new NotificacaoAula()
+            await database.Conexao.InsertMappedAsync(new NotificacaoAula()
             {
                 NotificacaoId = notificacaoId,
                 AulaId = aulaId

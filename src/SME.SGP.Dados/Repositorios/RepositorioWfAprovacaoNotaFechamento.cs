@@ -1,5 +1,4 @@
-﻿using Dommel;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -19,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Excluir(WfAprovacaoNotaFechamento wfAprovacaoNota)
         {
-            await database.Conexao.DeleteAsync(wfAprovacaoNota);
+            await database.Conexao.DeleteMappedAsync(wfAprovacaoNota);
         }
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterPorNotaId(long fechamentoNotaId)
@@ -32,9 +31,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task SalvarAsync(WfAprovacaoNotaFechamento entidade)
         {
             if (entidade.Id > 0)
-                await database.Conexao.UpdateAsync(entidade);
+                await database.Conexao.UpdateMappedAsync(entidade);
             else
-                await database.Conexao.InsertAsync(entidade);
+                await database.Conexao.InsertMappedAsync(entidade);
         }
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterWfAprovacaoNotaFechamentoSemWfAprovacaoId()

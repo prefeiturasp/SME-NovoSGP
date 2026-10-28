@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -11,7 +12,9 @@ namespace SME.SGP.Dominio
 
         public PerfilUsuario PerfilCodigo { get; set; }
         public long PendenciaId { get; set; }
+       
         public Pendencia Pendencia { get; set; }
+       
 
         public List<PendenciaPerfilUsuario> PendenciasPerfilUsuarios { get; set; }
 

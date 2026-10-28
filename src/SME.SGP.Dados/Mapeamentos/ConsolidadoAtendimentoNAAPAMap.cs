@@ -7,13 +7,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidadoAtendimentoNAAPAMap()
         {
             ToTable("consolidado_atendimento_naapa");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.Mes).ToColumn("mes");
-            Map(c => c.NomeProfissional).ToColumn("nome_profissional");
-            Map(c => c.RfProfissional).ToColumn("rf_profissional");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.Quantidade).ToColumn("quantidade");
-            Map(c => c.Modalidade).ToColumn("modalidade_codigo");
+            Map(nameof(ConsolidadoAtendimentoNAAPA.AnoLetivo), "ano_letivo");
+            Map(nameof(ConsolidadoAtendimentoNAAPA.Mes), "mes");
+            Map(nameof(ConsolidadoAtendimentoNAAPA.NomeProfissional), "nome_profissional");
+            Map(nameof(ConsolidadoAtendimentoNAAPA.RfProfissional), "rf_profissional");
+            Map(nameof(ConsolidadoAtendimentoNAAPA.UeId), "ue_id");
+            Map(nameof(ConsolidadoAtendimentoNAAPA.Quantidade), "quantidade");
+            Map(nameof(ConsolidadoAtendimentoNAAPA.Modalidade), "modalidade_codigo");
         }
     }
 }

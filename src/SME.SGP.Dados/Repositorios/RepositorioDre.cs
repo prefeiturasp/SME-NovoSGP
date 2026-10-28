@@ -32,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
             foreach (var item in novos)
             {
                 item.DataAtualizacao = DateTime.Today;
-                item.Id = (long) await contexto.Conexao.InsertAsync(item);
+                item.Id = await contexto.Conexao.InsertMappedAsync(item);
 
                 resultado.Add(item);
             }

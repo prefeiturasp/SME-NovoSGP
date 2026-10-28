@@ -7,11 +7,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidadoEncaminhamentoNAAPAMap()
         {
             ToTable("consolidado_encaminhamento_naapa");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.Quantidade).ToColumn("quantidade");
-            Map(c => c.Situacao).ToColumn("situacao");
-            Map(c => c.Modalidade).ToColumn("modalidade_codigo");
+            Map(nameof(ConsolidadoEncaminhamentoNAAPA.AnoLetivo), "ano_letivo");
+            Map(nameof(ConsolidadoEncaminhamentoNAAPA.UeId), "ue_id");
+            Map(nameof(ConsolidadoEncaminhamentoNAAPA.Quantidade), "quantidade");
+            Map(nameof(ConsolidadoEncaminhamentoNAAPA.Situacao), "situacao");
+            Map(nameof(ConsolidadoEncaminhamentoNAAPA.Modalidade), "modalidade_codigo");
         }
     }
 }

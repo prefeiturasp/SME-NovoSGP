@@ -1,13 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {

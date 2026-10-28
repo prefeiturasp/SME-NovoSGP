@@ -10,7 +10,6 @@ using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;

@@ -24,12 +24,12 @@ namespace SME.SGP.Dados.Repositorios
 
         public void Salvar(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao)
         {
-            dataBase.Conexao.Insert(workflowAprovaNivelNotificacao);
+            dataBase.Conexao.InsertMapped(workflowAprovaNivelNotificacao);
         }
 
         public async Task SalvarAsync(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao)
         {
-            await dataBase.Conexao.InsertAsync(workflowAprovaNivelNotificacao);
+            await dataBase.Conexao.InsertMappedAsync(workflowAprovaNivelNotificacao);
         }
     }
 }
