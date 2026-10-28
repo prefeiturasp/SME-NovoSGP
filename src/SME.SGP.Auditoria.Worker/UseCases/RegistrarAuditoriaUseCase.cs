@@ -16,6 +16,7 @@ namespace SME.SGP.Auditoria.Worker
         public async Task<bool> Executar(Infra.MensagemRabbit mensagem)
         {
             var auditoria = mensagem.ObterObjetoMensagem<Entidade.Auditoria>();
+            auditoria.Id ??= System.Guid.NewGuid();
             await repositorioAuditoria.Salvar(auditoria);
 
             return true;
