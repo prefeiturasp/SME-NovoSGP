@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Queries.Abrangencia.VerificaSeUsuarioPossuiAbrangencia;
 using SME.SGP.Dominio;

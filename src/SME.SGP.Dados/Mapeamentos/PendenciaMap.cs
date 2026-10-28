@@ -7,18 +7,17 @@ namespace SME.SGP.Dados.Mapeamentos
         public PendenciaMap()
         {
             ToTable("pendencia");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Situacao).ToColumn("situacao");
-            Map(c => c.Tipo).ToColumn("tipo");
-            Map(c => c.Titulo).ToColumn("titulo");
-            Map(c => c.Instrucao).ToColumn("instrucao");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.DescricaoHtml).ToColumn("descricao_html");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.QuantidadeAulas).ToColumn("qtde_aulas");
-            Map(c => c.QuantidadeDias).ToColumn("qtde_dias");
-            Map(c => c.PendenciaAssunto).Ignore();
+            Map(nameof(Pendencia.Descricao), "descricao");
+            Map(nameof(Pendencia.Situacao), "situacao");
+            Map(nameof(Pendencia.Tipo), "tipo");
+            Map(nameof(Pendencia.Titulo), "titulo");
+            Map(nameof(Pendencia.Instrucao), "instrucao");
+            Map(nameof(Pendencia.Excluido), "excluido");
+            Map(nameof(Pendencia.DescricaoHtml), "descricao_html");
+            Map(nameof(Pendencia.UeId), "ue_id");
+            Map(nameof(Pendencia.TurmaId), "turma_id");
+            Map(nameof(Pendencia.QuantidadeAulas), "qtde_aulas");
+            Map(nameof(Pendencia.QuantidadeDias), "qtde_dias");
         }
     }
 }

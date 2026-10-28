@@ -13,57 +13,176 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<RelatorioPeriodicoPAPSecao> ObterSecoesComQuestoes(long id)
+        public async Task<RelatorioPeriodicoPAPSecao>ObterSecoesComQuestoes(long id)
         {
-            var relatorioSecao = new RelatorioPeriodicoPAPSecao();
-            var query = @"select 
-                        rpps.id, rpps.relatorio_periodico_pap_aluno_id, rpps.secao_relatorio_periodico_pap_id, rpps.criado_em, rpps.criado_por, rpps.criado_rf,
-                        rppr.id, rppr.relatorio_periodico_pap_questao_id, rppr.resposta_id, rppr.arquivo_id, rppr.texto, rppr.excluido, rppr.criado_em, rppr.criado_por, rppr.criado_rf,
-                        rppq.id, rppq.relatorio_periodico_pap_secao_id, rppq.questao_id, rppq.excluido,
-                        q.id, q.questionario_id, q.ordem, q.nome, q.observacao, q.obrigatorio, q.tipo, q.opcionais, q.somente_leitura,
-                        q.dimensao, q.tamanho, q.mascara, q.placeholder, q.nome_componente,
-                        op.id, op.questao_id, op.ordem, op.nome, op.observacao
-                        from relatorio_periodico_pap_secao rpps
-                        inner join relatorio_periodico_pap_questao rppq on rppq.relatorio_periodico_pap_secao_id = rpps.id
-                        inner join questao q on q.id = rppq.questao_id and not q.excluido
-                        inner join relatorio_periodico_pap_resposta rppr on rppr.relatorio_periodico_pap_questao_id = rppq.id
-                        left join opcao_resposta op on op.id = rppr.resposta_id and not op.excluido
-                        where rpps.id = @id
-                           and not rpps.excluido    
-                           and not rppq.excluido 
-                           and not rppr.excluido";
+            const string query = @"
+                SELECT
+                    -- RelatorioPeriodicoPAPSecao
+                    rpps.id AS Id,
+                    rpps.criado_em AS CriadoEm,
+                    rpps.criado_por AS CriadoPor,
+                    rpps.alterado_em AS AlteradoEm,
+                    rpps.alterado_por AS AlteradoPor,
+                    rpps.alterado_rf AS AlteradoRF,
+                    rpps.criado_rf AS CriadoRF,
+                    rpps.relatorio_periodico_pap_aluno_id
+                        AS RelatorioPeriodicoAlunoId,
+                    rpps.secao_relatorio_periodico_pap_id
+                        AS SecaoRelatorioPeriodicoId,
+                    rpps.concluido AS Concluido,
+                    rpps.excluido AS Excluido,
 
-            await database.Conexao.QueryAsync<RelatorioPeriodicoPAPSecao, 
-                                              RelatorioPeriodicoPAPResposta, 
-                                              RelatorioPeriodicoPAPQuestao,
-                                              Questao, 
-                                              OpcaoResposta,
-                                              RelatorioPeriodicoPAPSecao>(query,
-                (secao, relatorioResposta, relatorioQuestao, questao, opcaoResposta) =>
+                    -- marcador de início da resposta
+                    rppr.id AS RespostaInicio,
+
+                    -- RelatorioPeriodicoPAPResposta
+                    rppr.id AS Id,
+                    rppr.criado_em AS CriadoEm,
+                    rppr.criado_por AS CriadoPor,
+                    rppr.alterado_em AS AlteradoEm,
+                    rppr.alterado_por AS AlteradoPor,
+                    rppr.alterado_rf AS AlteradoRF,
+                    rppr.criado_rf AS CriadoRF,
+                    rppr.relatorio_periodico_pap_questao_id
+                        AS RelatorioPeriodicoQuestaoId,
+                    rppr.resposta_id AS RespostaId,
+                    rppr.arquivo_id AS ArquivoId,
+                    rppr.texto AS Texto,
+                    rppr.excluido AS Excluido,
+
+                    -- marcador de início da questão do relatório
+                    rppq.id AS QuestaoRelatorioInicio,
+
+                    -- RelatorioPeriodicoPAPQuestao
+                    rppq.id AS Id,
+                    rppq.criado_em AS CriadoEm,
+                    rppq.criado_por AS CriadoPor,
+                    rppq.alterado_em AS AlteradoEm,
+                    rppq.alterado_por AS AlteradoPor,
+                    rppq.alterado_rf AS AlteradoRF,
+                    rppq.criado_rf AS CriadoRF,
+                    rppq.relatorio_periodico_pap_secao_id
+                        AS RelatorioPeriodiocoSecaoId,
+                    rppq.questao_id AS QuestaoId,
+                    rppq.excluido AS Excluido,
+
+                    -- marcador de início da Questao
+                    q.id AS QuestaoInicio,
+
+                    -- Questao
+                    q.id AS Id,
+                    q.criado_em AS CriadoEm,
+                    q.criado_por AS CriadoPor,
+                    q.alterado_em AS AlteradoEm,
+                    q.alterado_por AS AlteradoPor,
+                    q.alterado_rf AS AlteradoRF,
+                    q.criado_rf AS CriadoRF,
+                    q.questionario_id AS QuestionarioId,
+                    q.ordem AS Ordem,
+                    q.nome AS Nome,
+                    q.observacao AS Observacao,
+                    q.obrigatorio AS Obrigatorio,
+                    q.tipo AS Tipo,
+                    q.opcionais AS Opcionais,
+                    q.somente_leitura AS SomenteLeitura,
+                    q.dimensao AS Dimensao,
+                    q.tamanho AS Tamanho,
+                    q.mascara AS Mascara,
+                    q.placeholder AS PlaceHolder,
+                    q.nome_componente AS NomeComponente,
+
+                    -- marcador de início da Opção de resposta
+                    op.id AS OpcaoRespostaInicio,
+
+                    -- OpcaoResposta
+                    op.id AS Id,
+                    op.criado_em AS CriadoEm,
+                    op.criado_por AS CriadoPor,
+                    op.alterado_em AS AlteradoEm,
+                    op.alterado_por AS AlteradoPor,
+                    op.alterado_rf AS AlteradoRF,
+                    op.criado_rf AS CriadoRF,
+                    op.questao_id AS QuestaoId,
+                    op.ordem AS Ordem,
+                    op.nome AS Nome,
+                    op.observacao AS Observacao,
+                    op.excluido AS Excluido
+
+                FROM relatorio_periodico_pap_secao rpps
+                INNER JOIN relatorio_periodico_pap_questao rppq
+                    ON rppq.relatorio_periodico_pap_secao_id = rpps.id
+                   AND NOT rppq.excluido
+                INNER JOIN questao q
+                    ON q.id = rppq.questao_id
+                   AND NOT q.excluido
+                INNER JOIN relatorio_periodico_pap_resposta rppr
+                    ON rppr.relatorio_periodico_pap_questao_id = rppq.id
+                   AND NOT rppr.excluido
+                LEFT JOIN opcao_resposta op
+                    ON op.id = rppr.resposta_id
+                   AND NOT op.excluido
+                WHERE rpps.id = @id
+                  AND NOT rpps.excluido;";
+
+            var relatorioSecao =
+                new RelatorioPeriodicoPAPSecao();
+
+            await database.Conexao.QueryAsync<
+                RelatorioPeriodicoPAPSecao,
+                RelatorioPeriodicoPAPResposta,
+                RelatorioPeriodicoPAPQuestao,
+                Questao,
+                OpcaoResposta,
+                RelatorioPeriodicoPAPSecao>(
+                query,
+                (secao,
+                 relatorioResposta,
+                 relatorioQuestao,
+                 questao,
+                 opcaoResposta) =>
                 {
                     if (relatorioSecao.Id == 0)
+                    {
                         relatorioSecao = secao;
+                    }
 
-                    var questaoPAP = relatorioSecao.Questoes.FirstOrDefault(c => c.Id == relatorioQuestao.Id);
+                    var questaoPAP =
+                        relatorioSecao.Questoes
+                            .FirstOrDefault(
+                                c => c.Id == relatorioQuestao.Id);
 
                     if (questaoPAP.EhNulo())
                     {
                         questaoPAP = relatorioQuestao;
                         questaoPAP.Questao = questao;
-                        relatorioSecao.Questoes.Add(questaoPAP);
+
+                        relatorioSecao.Questoes
+                            .Add(questaoPAP);
                     }
 
-                    var resposta = questaoPAP.Respostas.FirstOrDefault(c => c.Id == relatorioResposta.Id);
+                    var resposta =
+                        questaoPAP.Respostas
+                            .FirstOrDefault(
+                                c => c.Id == relatorioResposta.Id);
 
                     if (resposta.NaoEhNulo())
-                        return secao;
+                    {
+                        return relatorioSecao;
+                    }
 
                     resposta = relatorioResposta;
                     resposta.Resposta = opcaoResposta;
+
                     questaoPAP.Respostas.Add(resposta);
 
-                    return secao;
-                }, new { id });
+                    return relatorioSecao;
+                },
+                new { id },
+                splitOn:
+                    "RespostaInicio," +
+                    "QuestaoRelatorioInicio," +
+                    "QuestaoInicio," +
+                    "OpcaoRespostaInicio");
 
             return relatorioSecao;
         }

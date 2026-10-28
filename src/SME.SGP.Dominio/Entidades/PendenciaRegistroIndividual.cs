@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
     public class PendenciaRegistroIndividual : EntidadeBase
     {
+       
         public Pendencia Pendencia { get; set; }
         public long PendenciaId { get; set; }
+       
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
         public ICollection<PendenciaRegistroIndividualAluno> Alunos { get; set; }

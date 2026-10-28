@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Dommel;
+using SME.SGP.Dados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -9,16 +9,16 @@ namespace SME.SGP.Dominio
 {
     public class RepositorioConsolidacaoAcompanhamentoAprendizagemAluno : IRepositorioConsolidacaoAcompanhamentoAprendizagemAluno
     {
-        private readonly ISgpContext database;
+        private readonly ISgpContext _database;
 
         public RepositorioConsolidacaoAcompanhamentoAprendizagemAluno(ISgpContext database)
         {
-            this.database = database;
+            this._database = database;
         }
 
         public async Task<long> Inserir(ConsolidacaoAcompanhamentoAprendizagemAluno consolidacao)
         {
-            return (long)(await database.Conexao.InsertAsync(consolidacao));
+            return (await _database.Conexao.InsertMappedAsync(consolidacao));
         }
 
         public async Task Limpar(int anoLetivo)
@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
                             where t.id = c.turma_id
                               and t.ano_letivo = @anoLetivo";
 
-            await database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
+            await _database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
         }
 
         public async Task<IEnumerable<DashboardAcompanhamentoAprendizagemDto>> ObterConsolidacao(int anoLetivo, long dreId, long ueId, int semestre)
@@ -53,7 +53,7 @@ namespace SME.SGP.Dominio
                          group by t.{agrupamento}
                         order by 1";
 
-            return await database.Conexao.QueryAsync<DashboardAcompanhamentoAprendizagemDto>(query, new { anoLetivo, semestre, dreId, ueId });
+            return await SqlMapper.QueryAsync<DashboardAcompanhamentoAprendizagemDto>(_database.Conexao, query, new { anoLetivo, semestre, dreId, ueId });
         }
 
         public async Task<IEnumerable<DashboardAcompanhamentoAprendizagemPorDreDto>> ObterConsolidacaoPorDre(int anoLetivo, int? semestre)
@@ -73,7 +73,7 @@ namespace SME.SGP.Dominio
                         group by dre.abreviacao, dre.dre_id 
                         order by dre.dre_id";
 
-            return await database.Conexao.QueryAsync<DashboardAcompanhamentoAprendizagemPorDreDto>(query, new { anoLetivo, semestre });
+            return await SqlMapper.QueryAsync<DashboardAcompanhamentoAprendizagemPorDreDto>(_database.Conexao, query, new { anoLetivo, semestre });
         }
     }
 }

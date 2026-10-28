@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class PlanoAEEObservacao : EntidadeBase
     {
@@ -9,6 +11,7 @@
             Observacao = observacao;
         }
 
+       
         public PlanoAEE PlanoAEE { get; set; }
         public long PlanoAEEId { get; set; }
         public string Observacao { get; set; }

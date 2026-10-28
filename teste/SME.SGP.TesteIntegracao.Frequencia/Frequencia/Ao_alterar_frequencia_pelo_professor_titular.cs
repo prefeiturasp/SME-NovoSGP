@@ -8,7 +8,6 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
@@ -375,7 +374,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_2) && a.QuantidadeFaltasCompensadas.Equals(NUMERO_AULA_2)).ShouldBeTrue();
             compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_3) && a.Excluido).ShouldBeTrue();
             compensacaoAusenciasAlunos.Any(a=> a.CodigoAluno.Equals(ALUNO_CODIGO_4) && a.QuantidadeFaltasCompensadas.Equals(NUMERO_AULA_1)).ShouldBeTrue();
-            
+
             compensacaoAusenciasAlunosAulas = ObterTodos<CompensacaoAusenciaAlunoAula>();
             compensacaoAusenciasAlunosAulas.Count(a=> !a.Excluido).Equals(3).ShouldBeTrue();
             compensacaoAusenciasAlunosAulas.Count(a=> a.Excluido).Equals(8).ShouldBeTrue();

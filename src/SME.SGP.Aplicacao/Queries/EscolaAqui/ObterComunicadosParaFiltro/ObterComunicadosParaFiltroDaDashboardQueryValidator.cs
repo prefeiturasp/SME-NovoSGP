@@ -1,6 +1,4 @@
 ﻿using FluentValidation;
-using SME.SGP.Dominio;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
 {

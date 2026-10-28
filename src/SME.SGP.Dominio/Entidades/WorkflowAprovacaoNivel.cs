@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -15,12 +16,16 @@ namespace SME.SGP.Dominio
         public Cargo? Cargo { get; set; }
 
         public int Nivel { get; set; }
+       
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
         public string Observacao { get; set; }
         public WorkflowAprovacaoNivelStatus Status { get; set; }
+       
         public IEnumerable<Usuario> Usuarios { get { return usuarios; } }
+       
         public WorkflowAprovacao Workflow { get; set; }
         public long WorkflowId { get; set; }
+       
         private IList<Notificacao> notificacoes { get; set; }
         private IList<Usuario> usuarios { get; set; }
 

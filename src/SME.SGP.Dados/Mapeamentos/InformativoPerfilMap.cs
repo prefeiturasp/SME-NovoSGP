@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public InformativoPerfilMap()
         {
             ToTable("informativo_perfil");
-            Map(c => c.InformativoId).ToColumn("informativo_id");
-            Map(c => c.CodigoPerfil).ToColumn("codigo_perfil");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(InformativoPerfil.InformativoId), "informativo_id");
+            Map(nameof(InformativoPerfil.CodigoPerfil), "codigo_perfil");
+            Map(nameof(InformativoPerfil.Excluido), "excluido");
         }
     }
 }

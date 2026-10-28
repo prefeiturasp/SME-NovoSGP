@@ -7,7 +7,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public GradeMap()
         {
             ToTable("grade");
-            Map(a => a.Nome).ToColumn("nome");
+            Map(nameof(Grade.Nome), "nome");
         }
     }
 }

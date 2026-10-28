@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dados.Mapeamentos;
 
 namespace SME.SGP.Dados
 {
@@ -7,9 +8,9 @@ namespace SME.SGP.Dados
         public QuestionarioMap()
         {
             ToTable("questionario");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Tipo).ToColumn("tipo");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(Questionario.Nome), "nome");
+            Map(nameof(Questionario.Tipo), "tipo");
+            Map(nameof(Questionario.Excluido), "excluido");
         }
     }
 }

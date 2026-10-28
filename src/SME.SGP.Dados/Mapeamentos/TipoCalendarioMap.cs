@@ -7,14 +7,15 @@ namespace SME.SGP.Dados.Mapeamentos
         public TipoCalendarioMap()
         {
             ToTable("tipo_calendario");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Modalidade).ToColumn("modalidade");
-            Map(c => c.Nome).ToColumn("nome");
-            Map(c => c.Periodo).ToColumn("periodo");
-            Map(c => c.Situacao).ToColumn("situacao");
-            Map(c => c.Semestre).ToColumn("semestre");
+
+            Map(nameof(TipoCalendario.AnoLetivo), "ano_letivo");
+            Map(nameof(TipoCalendario.Excluido), "excluido");
+            Map(nameof(TipoCalendario.Migrado), "migrado");
+            Map(nameof(TipoCalendario.Modalidade), "modalidade");
+            Map(nameof(TipoCalendario.Nome), "nome");
+            Map(nameof(TipoCalendario.Periodo), "periodo");
+            Map(nameof(TipoCalendario.Situacao), "situacao");
+            Map(nameof(TipoCalendario.Semestre), "semestre");
         }
     }
 }

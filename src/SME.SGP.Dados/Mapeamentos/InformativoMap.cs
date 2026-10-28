@@ -7,12 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public InformativoMap()
         {
             ToTable("informativo");
-            Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.Titulo).ToColumn("titulo");
-            Map(c => c.Texto).ToColumn("texto");
-            Map(c => c.DataEnvio).ToColumn("data_envio");
-            Map(c => c.Excluido).ToColumn("excluido");
+            Map(nameof(Informativo.DreId), "dre_id");
+            Map(nameof(Informativo.UeId), "ue_id");
+            Map(nameof(Informativo.Titulo), "titulo");
+            Map(nameof(Informativo.Texto), "texto");
+            Map(nameof(Informativo.DataEnvio), "data_envio");
+            Map(nameof(Informativo.Excluido), "excluido");
         }
     }
 }

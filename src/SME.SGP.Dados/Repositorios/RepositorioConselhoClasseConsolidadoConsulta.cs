@@ -35,8 +35,20 @@ namespace SME.SGP.Dados
 
         public async Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo)
         {
-            var query = $@" select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id,   
-                                   criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido           
+            var query = $@" select
+	                                id as Id,
+	                                dt_atualizacao as DataAtualizacao,
+	                                status as Status,
+	                                aluno_codigo as AlunoCodigo,
+	                                parecer_conclusivo_id as ParecerConclusivoId,
+	                                turma_id as TurmaId,
+	                                criado_em as CriadoEm,
+	                                criado_por as CriadoPor,
+	                                criado_rf as CriadoRF,
+	                                alterado_em as AlteradoEm,
+	                                alterado_por as AlteradoPor,
+	                                alterado_rf as AlteradoRF,
+	                                excluido as Excluido           
                             from consolidado_conselho_classe_aluno_turma 
                             where not excluido 
                             and turma_id = @turmaId

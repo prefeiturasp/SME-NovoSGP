@@ -1,13 +1,17 @@
-﻿namespace SME.SGP.Dominio
+﻿
+
+namespace SME.SGP.Dominio
 {
     public class CartaIntencoes : EntidadeBase
     {
         public long TurmaId { get; set; }
 
+       
         public Turma Turma { get; set; }
 
         public long PeriodoEscolarId { get; set; }
 
+       
         public PeriodoEscolar PeriodoEscolar { get; set; }
 
         public long ComponenteCurricularId { get; set; }

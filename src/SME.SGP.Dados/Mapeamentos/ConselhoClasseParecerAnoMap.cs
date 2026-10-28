@@ -7,11 +7,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConselhoClasseParecerAnoMap()
         {
             ToTable("conselho_classe_parecer_ano");
-            Map(c => c.ParecerId).ToColumn("parecer_id");
-            Map(c => c.AnoTurma).ToColumn("ano_turma");
-            Map(c => c.Modalidade).ToColumn("modalidade");
-            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
+            Map(nameof(ConselhoClasseParecerAno.ParecerId), "parecer_id");
+            Map(nameof(ConselhoClasseParecerAno.AnoTurma), "ano_turma");
+            Map(nameof(ConselhoClasseParecerAno.Modalidade), "modalidade");
+            Map(nameof(ConselhoClasseParecerAno.InicioVigencia), "inicio_vigencia");
+            Map(nameof(ConselhoClasseParecerAno.FimVigencia), "fim_vigencia");
         }
     }
 }
