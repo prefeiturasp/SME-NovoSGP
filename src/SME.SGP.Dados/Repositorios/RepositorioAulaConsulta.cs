@@ -1009,25 +1009,19 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(string turmaCodigo, long[] componentesCurricularesId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds, string professor = null)
         {
-            var sql = $@"select sum(quantidade) from (
-                                 select distinct a.id, a.quantidade as quantidade
-                                                 from 
-                                                     aula a 
-                                                 inner join 
-                                                     periodo_escolar pe 
-                                                     on a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim
-                                                 inner join
-                                                     registro_frequencia rf
-                                                     on a.id = rf.aula_id
-                                                 where 
-                                                     not a.excluido
-                                                     and not rf.excluido
-                                                     and a.turma_id = @turmaCodigo
-                                                     and a.disciplina_id = any(@componentesCurricularesId)
-                                                     and a.tipo_calendario_id = @tipoCalendarioId
-                                                     and pe.id = ANY(@periodosEscolaresIds)
-                                                     {(!string.IsNullOrEmpty(professor) ? " and a.professor_rf = @professor " : string.Empty)}
-                                 group by a.id) x";
+            var sql = $@"select coalesce(sum(a.quantidade), 0)
+                           from periodo_escolar pe
+                          inner join aula a on a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                          where pe.id = any(@periodosEscolaresIds)
+                            and not a.excluido
+                            and a.turma_id = @turmaCodigo
+                            and a.disciplina_id = any(@componentesCurricularesId)
+                            and a.tipo_calendario_id = @tipoCalendarioId
+                            and exists (select 1
+                                          from registro_frequencia rf
+                                         where rf.aula_id = a.id
+                                           and not rf.excluido)
+                            {(!string.IsNullOrEmpty(professor) ? " and a.professor_rf = @professor " : string.Empty)}";
 
             var parametros = new { turmaCodigo, componentesCurricularesId = componentesCurricularesId.Select(cc => cc.ToString()).ToArray(), tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList(), professor };
             return await database.Conexao.QueryFirstOrDefaultAsync<int?>(sql, parametros) ?? default;
