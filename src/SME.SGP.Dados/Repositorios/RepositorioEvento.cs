@@ -695,10 +695,10 @@ namespace SME.SGP.Dados.Repositorios
                 eventosTodaRede);
             queryEventos.AppendLine("left join dre on dre.dre_id = f_eventos_listar_sem_paginacao.dre_id ");
             queryEventos.AppendLine("left join ue on ue.ue_id = f_eventos_listar_sem_paginacao.ue_id ");
-            queryEventos.AppendLine("order by data_inicio ");
+            queryEventos.AppendLine("order by data_inicio, f_eventos_listar_sem_paginacao.eventoid ");
             queryEventos.AppendLine("offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
 
-            retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, Ue, Dre, Evento>(
+            var eventosPaginados = await database.Conexao.QueryAsync<Evento, EventoTipo, Ue, Dre, Evento>(
                 queryEventos.ToString(),
                 (evento, tipoEvento, ue, dre) =>
                 {
@@ -713,6 +713,11 @@ namespace SME.SGP.Dados.Repositorios
                     qtde_registros = paginacao.QuantidadeRegistros
                 },
                 splitOn: "EventoId, TipoEventoId, ue, dre");
+
+            retornoPaginado.Items = eventosPaginados
+                                    .GroupBy(e => e.Id)
+                                    .Select(g => g.First())
+                                    .ToList();
 
             retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
             retornoPaginado.TotalPaginas =

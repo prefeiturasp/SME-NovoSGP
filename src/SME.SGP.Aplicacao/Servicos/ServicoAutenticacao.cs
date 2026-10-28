@@ -2,7 +2,6 @@
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
@@ -23,7 +22,7 @@ namespace SME.SGP.Aplicacao.Servicos
             var autenticacao = await mediator.Send(new AutenticarQuery(login, senhaAtual));
             
             if (autenticacao.EhNulo() || autenticacao.Status != AutenticacaoStatusEol.Ok)
-                throw new NegocioException(MensagemNegocioComuns.SENHA_ATUAL_INCORRETA, HttpStatusCode.Unauthorized);
+                throw new NegocioException(MensagemNegocioComuns.SENHA_ATUAL_INCORRETA);
 
             var alteracaoSenha = await mediator.Send(new AlterarSenhaUsuarioCommand(login, novaSenha));
             if (!alteracaoSenha.SenhaAlterada)
