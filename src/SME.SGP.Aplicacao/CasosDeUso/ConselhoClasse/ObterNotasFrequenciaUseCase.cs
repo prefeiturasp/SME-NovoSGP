@@ -127,21 +127,8 @@ namespace SME.SGP.Aplicacao
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToList();
 
-            var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
-
-            if (conselhosClassesIds.NaoEhNulo())
-            {
-                foreach (var conselhosClassesId in conselhosClassesIds)
-                {
-                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.Bimestre));
-                    notasConselhoClasseAluno.AddRange(notasParaAdicionar);
-                }
-            }
-
             if (turmasCodigos.Count > 0)
                 turmasCodigos = await mediator.Send(new ObterTurmasConsideradasNoConselhoQuery(turmasCodigos, turma));
-
-            var notasConselhoEmAprovacao = await ObterNotasConselhoEmAprovacao(notasConselhoClasseAluno, turmasCodigos);
 
             //Verificar as notas finais
             var notasFechamentoAluno = Enumerable.Empty<NotaConceitoBimestreComponenteDto>();
@@ -181,6 +168,19 @@ namespace SME.SGP.Aplicacao
                 else
                     notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigosFiltro, notasFrequenciaDto.AlunoCodigo, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, notasFrequenciaDto.Bimestre, validaMatricula));
             }
+
+            var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
+
+            if (conselhosClassesIds.NaoEhNulo())
+            {
+                foreach (var conselhosClassesId in conselhosClassesIds)
+                {
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.Bimestre));
+                    notasConselhoClasseAluno.AddRange(notasParaAdicionar);
+                }
+            }
+
+            var notasConselhoEmAprovacao = await ObterNotasConselhoEmAprovacao(notasConselhoClasseAluno, turmasCodigos);
 
             var usuarioAtual = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
