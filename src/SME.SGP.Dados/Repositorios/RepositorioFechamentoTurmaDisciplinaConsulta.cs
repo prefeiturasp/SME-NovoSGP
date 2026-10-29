@@ -53,7 +53,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId,
             long[] disciplinasId, int bimestre = 0, long? tipoCalendario = null)
         {
-            var query = new StringBuilder(@"with lista as (
+            // "base" materializada isola as linhas da turma antes do filtro por disciplina:
+            // o "or exists" direto no join levava o planner a um seq scan em fechamento_aluno.
+            var query = new StringBuilder(@"with base as materialized (
                         select f.id, f.fechamento_turma_id, f.disciplina_id, f.situacao,
                                f.justificativa, f.migrado, f.criado_em, f.criado_por,
                                f.criado_rf, f.alterado_em, f.alterado_por, f.alterado_rf,
@@ -63,24 +65,18 @@ namespace SME.SGP.Dados.Repositorios
                                ft.criado_em, ft.alterado_em,
                                p.id, p.tipo_calendario_id, p.bimestre, p.periodo_inicio,
                                p.periodo_fim, p.migrado, p.criado_em, p.alterado_em,
-                            row_number() over (partition by t.id, fa.aluno_codigo, p.id, f.disciplina_id order by f.id desc) sequencia
+                               f.id as base_fechamento_turma_disciplina_id,
+                               fa.id as base_fechamento_aluno_id,
+                               p.id as base_periodo_escolar_id
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
-                         left join periodo_escolar p on p.id = ft.periodo_escolar_id 
+                         left join periodo_escolar p on p.id = ft.periodo_escolar_id
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
                         where t.id = @turmaId
                           and not f.excluido
                           and not ft.excluido
                           and not fa.excluido ");
-
-            if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
-                query.AppendLine(@"and (f.disciplina_id = ANY(@disciplinasId)
-                                  or exists (select 1 from fechamento_nota fn
-                                              inner join componente_curricular cc on cc.id = fn.disciplina_id
-                                              where fn.fechamento_aluno_id = fa.id
-                                                and not fn.excluido
-                                                and cc.id = ANY(@disciplinasId)))");
 
             if (bimestre > 0)
                 query.AppendLine("and p.bimestre = @bimestre");
@@ -89,6 +85,20 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0 && tipoCalendario.HasValue)
                 query.AppendLine(" and p.tipo_calendario_id = @tipoCalendario");
+
+            query.AppendLine(@"), lista as (
+                        select b.*,
+                               row_number() over (partition by b.aluno_codigo, b.base_periodo_escolar_id, b.disciplina_id order by b.base_fechamento_turma_disciplina_id desc) sequencia
+                          from base b
+                         where 1 = 1 ");
+
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
+                query.AppendLine(@"and (b.disciplina_id = ANY(@disciplinasId)
+                                  or exists (select 1 from fechamento_nota fn
+                                              inner join componente_curricular cc on cc.id = fn.disciplina_id
+                                              where fn.fechamento_aluno_id = b.base_fechamento_aluno_id
+                                                and not fn.excluido
+                                                and cc.id = ANY(@disciplinasId)))");
 
             query.AppendLine(") select * from lista where sequencia = 1;");
 
