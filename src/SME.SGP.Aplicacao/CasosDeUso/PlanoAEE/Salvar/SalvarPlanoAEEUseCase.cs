@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using Newtonsoft.Json;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using System;
@@ -30,6 +31,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
+            await AtualizarInformacoesSrm(planoAeeDto, long.Parse(aluno.CodigoAluno));
+
             var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.ObterNumeroAlunoChamada()));
 
             await mediator.Send(new SalvarPlanoAEETurmaAlunoCommand(planoAeePersistidoDto.PlanoId, aluno.CodigoAluno));
@@ -37,6 +40,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             await ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(planoAeePersistidoDto);
 
             return planoAeePersistidoDto;
+        }
+
+        private async Task AtualizarInformacoesSrm(PlanoAEEPersistenciaDto planoAeeDto, long codigoAluno)
+        {
+            var questaoSrm = planoAeeDto.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
+            if (questaoSrm.EhNulo())
+                return;
+
+            var dadosSrm = await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno));
+            questaoSrm.Resposta = JsonConvert.SerializeObject(dadosSrm);
         }
 
         private async Task ValidaQuestaoPeriodoEscolarSeEstaNoPeriodoCorreto(RetornoPlanoAEEDto planoAeePersistidoDto)

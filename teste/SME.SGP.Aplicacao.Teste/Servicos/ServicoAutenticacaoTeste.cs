@@ -82,5 +82,19 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
 
             await Assert.ThrowsAsync<NegocioException>(async () => await servicoAutenticacao.AlterarSenha("123", "456", "789"));
         }
+
+        [Fact]
+        public async Task SenhaAtualIncorretaNaoDeveRetornarStatusNaoAutorizado()
+        {
+            mediator.Setup(x => x.Send(It.IsAny<AutenticarQuery>(),It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new AutenticacaoApiEolDto
+                {
+                    CodigoRf = "123",
+                    Status = (AutenticacaoStatusEol)2,
+                });
+
+            var erro = await Assert.ThrowsAsync<NegocioException>(async () => await servicoAutenticacao.AlterarSenha("123", "456", "789"));
+            Assert.NotEqual(401, erro.StatusCode);
+        }
     }
 }

@@ -86,6 +86,85 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             secoes.Secoes.Exists(secao => secao.Nome == ConstantesTestePAP.OBSERVACOES).ShouldBeTrue();
         }
 
+        [Fact(DisplayName = "Obter apenas uma seção lógica quando houver seções PAP duplicadas")]
+        public async Task Ao_obter_secoes_deve_priorizar_secao_com_resposta_ativa()
+        {
+            await CriarDadosBase(true, true);
+
+            await InserirNaBase(new RelatorioPeriodicoPAPTurma
+            {
+                Id = 1,
+                PeriodoRelatorioId = ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1,
+                TurmaId = TURMA_ID_1,
+                CriadoEm = DateTime.Now.AddMinutes(-10),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RelatorioPeriodicoPAPAluno
+            {
+                Id = 1,
+                CodigoAluno = CODIGO_ALUNO_1,
+                NomeAluno = "Aluno PAP",
+                RelatorioPeriodicoTurmaId = 1,
+                CriadoEm = DateTime.Now.AddMinutes(-10),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RelatorioPeriodicoPAPSecao
+            {
+                Id = 1,
+                RelatorioPeriodicoAlunoId = 1,
+                SecaoRelatorioPeriodicoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3,
+                CriadoEm = DateTime.Now.AddMinutes(-10),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RelatorioPeriodicoPAPSecao
+            {
+                Id = 2,
+                RelatorioPeriodicoAlunoId = 1,
+                SecaoRelatorioPeriodicoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RelatorioPeriodicoPAPQuestao
+            {
+                Id = 1,
+                RelatorioPeriodiocoSecaoId = 2,
+                QuestaoId = ConstantesTestePAP.QUESTAO_AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE_ID_4,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RelatorioPeriodicoPAPResposta
+            {
+                Id = 1,
+                RelatorioPeriodicoQuestaoId = 1,
+                Texto = "Resposta da seção que deve ser priorizada",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ServiceProvider.GetService<IObterSecoesPAPUseCase>();
+            var secoes = await useCase.Executar(new Infra.FiltroObterSecoesDto(
+                CODIGO_ALUNO_1, TURMA_CODIGO_1, ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1));
+
+            secoes.Secoes.Count.ShouldBe(4);
+            var secoesAvanco = secoes.Secoes
+                .Where(secao => secao.Id == ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3)
+                .ToList();
+            secoesAvanco.Count.ShouldBe(1);
+            secoesAvanco.Single().PAPSecaoId.ShouldBe(2);
+            secoesAvanco.Single().QuantidadeSecoesPersistidas.ShouldBe(2);
+        }
+
 
         [Fact(DisplayName = "Obter o questionario")]
         public async Task Ao_obter_questionario()

@@ -13,5 +13,8 @@
         public long? PAPTurmaId { get; set; }
         public long? PAPAlunoId { get; set; }
         public AuditoriaDto Auditoria { get; set; }
+
+        [Newtonsoft.Json.JsonIgnore]
+        public int QuantidadeSecoesPersistidas { get; set; }
     }
 }

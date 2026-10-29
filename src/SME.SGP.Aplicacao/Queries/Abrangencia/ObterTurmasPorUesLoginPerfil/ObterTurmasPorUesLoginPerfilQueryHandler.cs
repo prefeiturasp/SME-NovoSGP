@@ -48,8 +48,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AbrangenciaTurmaComUeRetorno>> Handle(ObterTurmasPorUesLoginPerfilQuery request, CancellationToken cancellationToken)
         {
-            var anosInfantilDesconsiderar = await mediator.Send(
-                new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo, Modalidade.EducacaoInfantil));
+            var anosInfantilDesconsiderar = request.Modalidade == Modalidade.EducacaoInfantil
+                ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo, Modalidade.EducacaoInfantil), cancellationToken)
+                : null;
 
             var result = await repositorioAbrangencia.ObterTurmasPorTiposListaUes(
                 request.CodigosUes, request.Login, request.Perfil,

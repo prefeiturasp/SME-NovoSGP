@@ -24,61 +24,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
         {
             await CriarDadosBase(true, true);
 
-            var relatorio = new RelatorioPAPDto()
-            {
-                AlunoCodigo = CODIGO_ALUNO_1,
-                AlunoNome = "Pap",
-                periodoRelatorioPAPId = ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1,
-                TurmaId = TURMA_ID_1,
-                Secoes = new List<RelatorioPAPSecaoDto>
-                {
-                    new RelatorioPAPSecaoDto()
-                    {
-                        SecaoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2,
-                        Respostas = new List<RelatorioPAPRespostaDto>()
-                        {
-                            new RelatorioPAPRespostaDto()
-                            {
-                                QuestaoId = ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2,
-                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                                Resposta = ConstantesTestePAP.OPCAO_RESPOSTA_LEITURA_ID
-                            },
-                            new RelatorioPAPRespostaDto()
-                            {
-                                QuestaoId = ConstantesTestePAP.QUESTAO_OBSERVACAO_ID_3,
-                                TipoQuestao = TipoQuestao.EditorTexto,
-                                Resposta = "Observação dificuldades apresentadas"
-                            }
-                        }
-                    },
-                    new RelatorioPAPSecaoDto()
-                    {
-                        SecaoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3,
-                        Respostas = new List<RelatorioPAPRespostaDto>()
-                        {
-                            new RelatorioPAPRespostaDto()
-                            {
-                                QuestaoId = ConstantesTestePAP.QUESTAO_AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE_ID_4,
-                                TipoQuestao = TipoQuestao.EditorTexto,
-                                Resposta = "Avanços na aprendizagem durante o bimestre"
-                            }
-                        }
-                    },
-                    new RelatorioPAPSecaoDto()
-                    {
-                        SecaoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_OBS_ID_4,
-                        Respostas = new List<RelatorioPAPRespostaDto>()
-                        {
-                            new RelatorioPAPRespostaDto()
-                            {
-                                QuestaoId = ConstantesTestePAP.QUESTAO_OBSERVACOES_ID_5,
-                                TipoQuestao = TipoQuestao.EditorTexto,
-                                Resposta = "Observações"
-                            }
-                        }
-                    }
-                }
-            };
+            var relatorio = ObterRelatorioValido();
 
             var useCase = ServiceProvider.GetService<ISalvarRelatorioPAPUseCase>();
 
@@ -143,6 +89,45 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             var respostaObsevacao = relatorioResposta.Find(r => r.RelatorioPeriodicoQuestaoId == questaoObsevacao.Id);
             respostaObsevacao.ShouldNotBeNull();
             respostaObsevacao.Texto.ShouldBe("Observações");
+
+            relatorio.PAPAlunoId = retorno.PAPAlunoId;
+            relatorio.PAPTurmaId = retorno.PAPTurmaId;
+
+            var retornoSemIdsDasSecoes = await useCase.Executar(relatorio);
+
+            retornoSemIdsDasSecoes.Secoes.Count.ShouldBe(3);
+            ObterTodos<RelatorioPeriodicoPAPSecao>().Count.ShouldBe(3);
+        }
+
+        [Fact(DisplayName = "Salvar relatório PAP deve desfazer todas as inclusões quando uma seção falhar")]
+        public async Task Ao_falhar_salvamento_deve_realizar_rollback()
+        {
+            await CriarDadosBase(true, true);
+
+            var relatorio = ObterRelatorioValido();
+            relatorio.Secoes.Add(new RelatorioPAPSecaoDto
+            {
+                SecaoId = long.MaxValue,
+                Respostas = new List<RelatorioPAPRespostaDto>
+                {
+                    new RelatorioPAPRespostaDto
+                    {
+                        QuestaoId = ConstantesTestePAP.QUESTAO_OBSERVACOES_ID_5,
+                        TipoQuestao = TipoQuestao.EditorTexto,
+                        Resposta = "Seção inválida para provocar rollback"
+                    }
+                }
+            });
+
+            var useCase = ServiceProvider.GetService<ISalvarRelatorioPAPUseCase>();
+
+            await Assert.ThrowsAnyAsync<System.Exception>(() => useCase.Executar(relatorio));
+
+            ObterTodos<RelatorioPeriodicoPAPTurma>().ShouldBeEmpty();
+            ObterTodos<RelatorioPeriodicoPAPAluno>().ShouldBeEmpty();
+            ObterTodos<RelatorioPeriodicoPAPSecao>().ShouldBeEmpty();
+            ObterTodos<RelatorioPeriodicoPAPQuestao>().ShouldBeEmpty();
+            ObterTodos<RelatorioPeriodicoPAPResposta>().ShouldBeEmpty();
         }
 
         [Fact(DisplayName = "Salvar relatório pap para aluno validar questões obrigatórias")]
@@ -181,6 +166,65 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             excecao.Message.ShouldNotBeNull();
 
             excecao.Message.ShouldBe(string.Format(MensagemNegocioRelatorioPAP.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS, "Seção: Dificuldades apresentadas Questões: [1], Seção: Avanços na aprendizagem durante o bimestre Questões: [1]"));
+        }
+
+        private static RelatorioPAPDto ObterRelatorioValido()
+        {
+            return new RelatorioPAPDto
+            {
+                AlunoCodigo = CODIGO_ALUNO_1,
+                AlunoNome = "Pap",
+                periodoRelatorioPAPId = ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1,
+                TurmaId = TURMA_ID_1,
+                Secoes = new List<RelatorioPAPSecaoDto>
+                {
+                    new RelatorioPAPSecaoDto
+                    {
+                        SecaoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2,
+                        Respostas = new List<RelatorioPAPRespostaDto>
+                        {
+                            new RelatorioPAPRespostaDto
+                            {
+                                QuestaoId = ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2,
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+                                Resposta = ConstantesTestePAP.OPCAO_RESPOSTA_LEITURA_ID
+                            },
+                            new RelatorioPAPRespostaDto
+                            {
+                                QuestaoId = ConstantesTestePAP.QUESTAO_OBSERVACAO_ID_3,
+                                TipoQuestao = TipoQuestao.EditorTexto,
+                                Resposta = "Observação dificuldades apresentadas"
+                            }
+                        }
+                    },
+                    new RelatorioPAPSecaoDto
+                    {
+                        SecaoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3,
+                        Respostas = new List<RelatorioPAPRespostaDto>
+                        {
+                            new RelatorioPAPRespostaDto
+                            {
+                                QuestaoId = ConstantesTestePAP.QUESTAO_AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE_ID_4,
+                                TipoQuestao = TipoQuestao.EditorTexto,
+                                Resposta = "Avanços na aprendizagem durante o bimestre"
+                            }
+                        }
+                    },
+                    new RelatorioPAPSecaoDto
+                    {
+                        SecaoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_OBS_ID_4,
+                        Respostas = new List<RelatorioPAPRespostaDto>
+                        {
+                            new RelatorioPAPRespostaDto
+                            {
+                                QuestaoId = ConstantesTestePAP.QUESTAO_OBSERVACOES_ID_5,
+                                TipoQuestao = TipoQuestao.EditorTexto,
+                                Resposta = "Observações"
+                            }
+                        }
+                    }
+                }
+            };
         }
     }
 }
