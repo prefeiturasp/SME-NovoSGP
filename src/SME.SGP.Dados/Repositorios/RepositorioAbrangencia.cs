@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -18,12 +19,15 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioAbrangencia : IRepositorioAbrangencia
     {
         protected readonly ISgpContext database;
+        private readonly ISgpContextConsultas databaseConsultas;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
 
         public RepositorioAbrangencia(ISgpContext database,
+                                      ISgpContextConsultas databaseConsultas,
                                       IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
+            this.databaseConsultas = databaseConsultas ?? throw new ArgumentNullException(nameof(databaseConsultas));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
@@ -247,7 +251,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico, int anoMinimo)
         {
-            var anos = (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
+            var anos = (await databaseConsultas.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
                                                              order by 1 desc", new { login, perfil, consideraHistorico }));
             return anos.Where(a => a >= anoMinimo);
         }
@@ -314,7 +318,7 @@ namespace SME.SGP.Dados.Repositorios
                                    (@consideraHistorico = false and a.historico  = false and act.turma_historica = false)); ");
 
 
-            return (await database.Conexao.QueryAsync<string>(query.ToString(), new {login, perfil, codigoUe, modalidade = (int) modalidade, consideraHistorico,anoLetivo}));
+            return (await databaseConsultas.Conexao.QueryAsync<string>(query.ToString(), new {login, perfil, codigoUe, modalidade = (int) modalidade, consideraHistorico,anoLetivo}));
         }
 
         public async Task<AbrangenciaDreRetornoDto> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil)
@@ -372,7 +376,7 @@ namespace SME.SGP.Dados.Repositorios
                 filtro
             };
 
-            var retorno = await database.Conexao
+            var retorno = await databaseConsultas.Conexao
                 .QueryAsync<AbrangenciaDreRetornoDto>(query.ToString(), parametros);
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
@@ -385,7 +389,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, @modalidadesQueSeraoIgnoradas) order by 1";
             var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
-            var retorno = await database.Conexao
+            var retorno = await databaseConsultas.Conexao
                 .QueryAsync<int>(query, new { login, perfil, consideraHistorico, anoLetivo, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray });
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
@@ -404,7 +408,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var parametros = new { login, perfil, consideraHistorico, modalidade, anoLetivo, dreCodigo, ueCodigo };
 
-            var retorno = await database.Conexao
+            var retorno = await databaseConsultas.Conexao
                 .QueryAsync<int>(@"select f_abrangencia_semestres(@login, @perfil, @consideraHistorico, @modalidade, @anoLetivo, @dreCodigo, @ueCodigo)
                                    order by 1", parametros);
 
@@ -432,7 +436,7 @@ namespace SME.SGP.Dados.Repositorios
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
-            return await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo });
+            return await databaseConsultas.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo });
         }
 
         public async Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil)
@@ -510,7 +514,7 @@ namespace SME.SGP.Dados.Repositorios
                 anosTurma = filtroModalidade.AnosTurma
             };
 
-            var retorno = await database.Conexao
+            var retorno = await databaseConsultas.Conexao
                 .QueryAsync<AbrangenciaUeRetorno>(query.ToString(), parametros);
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
@@ -879,7 +883,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("order by 5");
 
-            var resultado = await database.Conexao
+            var resultado = await databaseConsultas.Conexao
                 .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new
                 {
                     login, 
