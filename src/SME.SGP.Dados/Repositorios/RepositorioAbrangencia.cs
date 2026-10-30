@@ -554,7 +554,7 @@ namespace SME.SGP.Dados.Repositorios
                 ignorarTiposUE
             };
 
-            var retorno = await database.Conexao.QueryAsync<AbrangenciaUeComDreRetorno>(query, parametros);
+            var retorno = await databaseConsultas.Conexao.QueryAsync<AbrangenciaUeComDreRetorno>(query, parametros);
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
                 retorno = await AcrescentarUesSupervisorListaDres(login, modalidade ?? 0, periodo, codigosDres, consideraHistorico, anoLetivo, ignorarTiposUE, retorno);
@@ -654,7 +654,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = "select 1 from prioridade_perfil where codigo_perfil = @perfil and tipo = any(@tipos)";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { perfil, tipos = tipos?.Select(c => (int)c)?.ToArray() });
+            return await databaseConsultas.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { perfil, tipos = tipos?.Select(c => (int)c)?.ToArray() });
         }
         public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe)
         {
@@ -667,7 +667,7 @@ namespace SME.SGP.Dados.Repositorios
                             where
                                 u.ue_id = @codigoUe  and t.modalidade_codigo <> 0";
 
-            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
+            return await databaseConsultas.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
         }
 
         public async Task<IEnumerable<Modalidade>> ObterModalidadesPorCodigosUe(string[] codigosUe)
@@ -724,7 +724,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
-            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year }, commandTimeout: 60);
+            return await databaseConsultas.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)
@@ -1117,7 +1117,7 @@ namespace SME.SGP.Dados.Repositorios
                             from f_abrangencia_turmas_tipos_lista_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigosUes, @anoLetivo, @tipos, @anosInfantilDesconsiderar)
                           order by nome";
 
-            var resultado = await database.Conexao
+            var resultado = await databaseConsultas.Conexao
                 .QueryAsync<AbrangenciaTurmaComUeRetorno>(query, new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigosUes, anoLetivo, tipos, anosInfantilDesconsiderar });
 
             var resultadoFiltrado = resultado.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Codigo).Take(1));
