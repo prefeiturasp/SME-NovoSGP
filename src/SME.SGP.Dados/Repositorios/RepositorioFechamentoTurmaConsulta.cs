@@ -111,7 +111,7 @@ namespace SME.SGP.Dados.Repositorios
                         turma.Ue = ue;
 
                     fechamentoTurma.Turma = turma;
-                    fechamentoTurma.PeriodoEscolar = periodoEscolar;
+                    fechamentoTurma.PeriodoEscolar = periodoEscolar?.Id > 0 ? periodoEscolar : null;
 
                     return fechamentoTurma;
                 },
