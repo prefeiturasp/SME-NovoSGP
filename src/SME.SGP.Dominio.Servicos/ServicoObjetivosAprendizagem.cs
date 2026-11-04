@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos
 
 
                 var objetivosAAtualizar = objetivosJuremaResposta
-                    .Where(o => o.AtualizadoEm < dataUltimaAtualizacao)
+                    .Where(o => o.AtualizadoEm >= dataUltimaAtualizacao)
                     .Where(o => baseKeysAtivos.Contains(KeyApi(o)))
                     .Where(o => !incluirKeys.Contains(KeyApi(o)))
                     .ToList();
