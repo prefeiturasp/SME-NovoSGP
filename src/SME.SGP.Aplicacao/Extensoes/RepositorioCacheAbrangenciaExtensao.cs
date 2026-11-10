@@ -46,5 +46,12 @@ namespace SME.SGP.Aplicacao
         /// </summary>
         public static string ParaChaveCache(this IEnumerable<int> itens)
             => itens == null ? "null" : string.Join(",", itens.OrderBy(i => i));
+
+        /// <summary>
+        /// Texto para compor chave de cache. Nulo vira "null" e vazio vira "": as funções de abrangência podem tratar
+        /// NULL e '' de forma diferente.
+        /// </summary>
+        public static string ParaChaveCache(this string valor)
+            => valor ?? "null";
     }
 }

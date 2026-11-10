@@ -62,6 +62,12 @@
         public const string ABRANGENCIA_DRES = "abrangencia-dres:{0}-{1}-{2}-{3}-{4}-{5}";
         // login-perfil-codigoDre-modalidade-anoLetivo-consideraHistorico-periodo-ignorarTiposUE
         public const string ABRANGENCIA_UES = "abrangencia-ues:{0}-{1}-{2}-{3}-{4}-{5}-{6}-{7}";
+        // login-perfil-modalidade-consideraHistorico-anoLetivo-dreCodigo-ueCodigo
+        public const string ABRANGENCIA_SEMESTRES = "abrangencia-semestres:{0}-{1}-{2}-{3}-{4}-{5}-{6}";
+        // login-perfil-codigoUe-consideraHistorico-anoLetivo-modalidadesIgnoradas
+        public const string ABRANGENCIA_MODALIDADES_UE = "abrangencia-modalidades-ue:{0}-{1}-{2}-{3}-{4}-{5}";
+        // Chave do IMemoryCache (por pod, 1 min) com o parâmetro de novos tipos de UE (tipo 55) por ano
+        public const string PARAMETRO_NOVOS_TIPOS_UE = "parametro-novos-tipos-ue:{0}";
         // Chave do IMemoryCache (por pod, 1 min) com a configuração lida do parâmetro UtilizarCacheAbrangencia
         public const string PARAMETRO_UTILIZAR_CACHE_ABRANGENCIA = "parametro-utilizar-cache-abrangencia";
     }

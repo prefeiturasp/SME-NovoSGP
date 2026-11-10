@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
             return await repositorioCacheAbrangencia.ObterComCacheAsync(chave, Buscar, configuracaoCache.ObterMinutosExpiracao(perfil));
         }
 
-        public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null)
+        public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null, bool usarCache = false)
         {
             var login = servicoUsuario
                 .ObterLoginAtual();
@@ -144,8 +144,28 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario
                 .ObterPerfilAtual();
 
-            var retorno = await repositorioAbrangencia
-                .ObterSemestres(login, perfil, modalidade, consideraHistorico, anoLetivo, dreCodigo, ueCodigo);
+            Task<IEnumerable<int>> Buscar()
+                => repositorioAbrangencia.ObterSemestres(login, perfil, modalidade, consideraHistorico, anoLetivo, dreCodigo, ueCodigo);
+
+            var configuracaoCache = usarCache
+                ? await mediator.Send(ObterConfiguracaoCacheAbrangenciaQuery.Instance)
+                : null;
+
+            IEnumerable<int> retorno;
+
+            if (configuracaoCache.EhNulo())
+                retorno = await Buscar();
+            else
+            {
+                // Chave do cache = todos os argumentos de RepositorioAbrangencia.ObterSemestres que mudam o resultado:
+                //   login, perfil, modalidade, consideraHistorico, anoLetivo, dreCodigo, ueCodigo (null ≠ "").
+                // Ao adicionar argumento em ObterSemestres, incluir aqui.
+                // O acréscimo de semestres de supervisor acontece dentro do repositório → entra no cache (chave por login).
+                var chave = string.Format(NomeChaveCache.ABRANGENCIA_SEMESTRES,
+                    login, perfil, (int)modalidade, consideraHistorico, anoLetivo, dreCodigo.ParaChaveCache(), ueCodigo.ParaChaveCache());
+
+                retorno = await repositorioCacheAbrangencia.ObterComCacheAsync(chave, Buscar, configuracaoCache.ObterMinutosExpiracao(perfil));
+            }
 
             return retorno
                 .Where(a => a != 0);
