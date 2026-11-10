@@ -20,6 +20,9 @@ namespace SME.SGP.Aplicacao
         public string Login { get; set; }
         public Guid Perfil { get; set; }
 
+        /// <summary>Usa o cache de abrangência (quando ligado no parâmetro UtilizarCacheAbrangencia e sem filtro de texto).</summary>
+        public bool UsarCache { get; set; }
+
 
         public ObterAbrangenciaDresQuery(string login, Guid perfil, Modalidade? modalidade, int periodo, bool consideraHistorico, int anoLetivo, string filtro)
         {

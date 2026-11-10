@@ -89,6 +89,8 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
             services.TryAddScoped<IRepositorioCache, RepositorioCacheFake>();
+            services.TryAddScoped<IRepositorioCacheAbrangencia, RepositorioCacheAbrangenciaFake>();
+            services.AddMemoryCache();
             services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamentoFake>();
             services.TryAddScoped<IServicoMensageriaLogs, ServicoMensageriaLogsFake>();
             services.TryAddScoped<IServicoMensageriaMetricas, ServicoMensageriaMetricasFake>();

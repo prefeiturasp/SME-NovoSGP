@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUEsPorDREQuery : IRequest<IEnumerable<AbrangenciaUeRetorno>>
     {
-        public ObterUEsPorDREQuery(UEsPorDreDto dto, string login, Guid perfil)
+        public ObterUEsPorDREQuery(UEsPorDreDto dto, string login, Guid perfil, bool usarCache = false)
         {
             CodigoDre = dto.CodigoDre;
             Login = login;
@@ -25,8 +25,9 @@ namespace SME.SGP.Aplicacao
             Filtro = dto.Filtro;
             FiltroEhCodigo = !string.IsNullOrWhiteSpace(dto.Filtro) && dto.Filtro.All(char.IsDigit);
             AnosTurma = dto.AnosTurma;
+            UsarCache = usarCache;
         }
-        public ObterUEsPorDREQuery(string codigoDre, string login, Guid perfil, bool consideraHistorico, int anoLetivo)
+        public ObterUEsPorDREQuery(string codigoDre, string login, Guid perfil, bool consideraHistorico, int anoLetivo, bool usarCache = false)
         {
             CodigoDre = codigoDre;
             Login = login;
@@ -39,6 +40,7 @@ namespace SME.SGP.Aplicacao
             FiltrarTipoEscolaPorAnoLetivo = false;
             Filtro = string.Empty;
             FiltroEhCodigo = false;
+            UsarCache = usarCache;
         }
 
         public string CodigoDre { get; }
@@ -53,6 +55,9 @@ namespace SME.SGP.Aplicacao
         public string Filtro { get; }
         public bool FiltroEhCodigo { get; }
         public string[] AnosTurma { get; }
+
+        /// <summary>Usa o cache de abrangência (quando ligado no parâmetro UtilizarCacheAbrangencia, sem filtro de texto e sem anosTurma).</summary>
+        public bool UsarCache { get; }
     }
 
     public class ObterUEsPorDREQueryValidator : AbstractValidator<ObterUEsPorDREQuery>

@@ -19,5 +19,8 @@ namespace SME.SGP.Aplicacao
         public Guid Perfil { get; set; }
 
         public int AnoMinimo { get; set; }
+
+        /// <summary>Usa o cache de abrangência (quando ligado no parâmetro UtilizarCacheAbrangencia).</summary>
+        public bool UsarCache { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -279,7 +280,15 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
-            services.TryAddScoped<ISgpContextConsultas, SgpContextConsultas>();
+            services.TryAddScoped<ISgpContextConsultas>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var atributo = provider.GetService<IHttpContextAccessor>()?.HttpContext?.GetEndpoint()?
+                    .Metadata.GetMetadata<ConexaoConsultasAttribute>();
+
+                return new SgpContextConsultas(configuration, provider.GetRequiredService<IContextoAplicacao>(),
+                    ConexaoConsultasAttribute.ObterNomeConexao(atributo, configuration));
+            });
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }
 
