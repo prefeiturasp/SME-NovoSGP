@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             var login = await mediator.Send(ObterLoginAtualQuery.Instance);
             var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
 
-            return await mediator.Send(new ObterUEsPorDREQuery(dto, login, perfil));
+            return await mediator.Send(new ObterUEsPorDREQuery(dto, login, perfil, usarCache: true));
         }
     }
 }

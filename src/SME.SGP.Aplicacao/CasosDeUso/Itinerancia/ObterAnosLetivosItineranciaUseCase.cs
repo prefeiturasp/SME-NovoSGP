@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            var anosLetivosAbrangenciaHistorico = await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(usuarioLogado.Login, true, usuarioLogado.PerfilAtual, 0));
+            var anosLetivosAbrangenciaHistorico = await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(usuarioLogado.Login, true, usuarioLogado.PerfilAtual, 0) { UsarCache = true });
 
             var anosParaRetorno = new HashSet<int>();
 

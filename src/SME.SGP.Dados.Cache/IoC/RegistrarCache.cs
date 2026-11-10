@@ -54,15 +54,41 @@ namespace SME.SGP.IoC
 
                 return ObterRepositorio(serviceProvider, options, servicoTelemetria, services, servicoMensageriaLogs, metricasCache, circuitBreaker);
             });
+
+            services.AddSingleton<IRepositorioCacheAbrangencia>(serviceProvider =>
+            {
+                var options = serviceProvider.GetService<IOptions<ConfiguracaoCacheOptions>>()?.Value;
+                var servicoTelemetria = serviceProvider.GetService<IServicoTelemetria>();
+                var servicoMensageriaLogs = serviceProvider.GetService<IServicoMensageriaLogs>();
+                var metricasCache = serviceProvider.GetService<IMetricasCache>();
+
+                return ObterRepositorioAbrangencia(serviceProvider, options, servicoTelemetria, servicoMensageriaLogs, metricasCache);
+            });
         }
 
         private static void RegistraMemoryCache(this IServiceCollection services)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<IOptions<ConfiguracaoCacheOptions>>().Value;
+            // Sempre registrado: além do cache em memória (UtilizaRedis = false), é usado para guardar
+            // por 1 min a configuração do cache de abrangência (parâmetro UtilizarCacheAbrangencia).
+            services.AddMemoryCache();
+        }
 
-            if (!options.UtilizaRedis)
-                services.AddMemoryCache();
+        private static IRepositorioCacheAbrangencia ObterRepositorioAbrangencia(IServiceProvider serviceProvider, ConfiguracaoCacheOptions options, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
+        {
+            if (options.EhNulo() || !options.UtilizaRedis)
+                return new RepositorioCacheAbrangenciaMemoria(serviceProvider.GetService<IMemoryCache>(), servicoTelemetria, servicoMensageriaLogs, metricasCache);
+
+            // Redis:Endpoint2 (e demais *2); sem Endpoint2, usa o Redis principal.
+            var redisOptions = serviceProvider.GetService<IOptions<RedisOptions>>()?.Value?.ObterOpcoesAbrangencia() ?? new RedisOptions();
+            var connection = new ConnectionMultiplexerSME(redisOptions);
+
+            // Circuit breaker próprio: falha neste Redis não abre o breaker do Redis principal (e vice-versa).
+            var circuitBreakerOptions = serviceProvider.GetService<IOptions<CircuitBreakerSimplesOptions>>()?.Value;
+            var circuitBreaker = new CircuitBreaker(
+                limiteFalhas: circuitBreakerOptions?.LimiteFalhas ?? 5,
+                tempoAbertura: TimeSpan.FromSeconds(circuitBreakerOptions?.TempoAberturaSegundos ?? 30));
+
+            return new RepositorioCacheAbrangenciaRedis(connection, servicoTelemetria, servicoMensageriaLogs, metricasCache, redisOptions, circuitBreaker);
         }
 
         private static IRepositorioCache ObterRepositorio(IServiceProvider serviceProvider, ConfiguracaoCacheOptions options, IServicoTelemetria servicoTelemetria, IServiceCollection services, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache, ICircuitBreaker circuitBreaker)

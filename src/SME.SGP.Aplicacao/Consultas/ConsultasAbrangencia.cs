@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -17,12 +18,15 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
+        private readonly IRepositorioCacheAbrangencia repositorioCacheAbrangencia;
 
-        public ConsultasAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario, IMediator mediator)
+        public ConsultasAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario, IMediator mediator,
+                                    IRepositorioCacheAbrangencia repositorioCacheAbrangencia)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCacheAbrangencia = repositorioCacheAbrangencia ?? throw new ArgumentNullException(nameof(repositorioCacheAbrangencia));
         }
 
         public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorfiltro(string texto, bool consideraHistorico, bool consideraNovosAnosInfantil = false)
@@ -53,12 +57,12 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
         }
         
-        public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico, int anoMinimo)
+        public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico, int anoMinimo, bool usarCache = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
             List<int> anosLetivos = new List<int>();
-            var anos = await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(login, consideraHistorico, perfil, anoMinimo));
+            var anos = await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(login, consideraHistorico, perfil, anoMinimo) { UsarCache = usarCache });
 
             anosLetivos.AddRange(anos);
 
@@ -108,13 +112,28 @@ namespace SME.SGP.Aplicacao
             return Task.FromResult(anos);
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
+        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool usarCache = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
             var filtroEhCodigo = !string.IsNullOrWhiteSpace(filtro) && filtro.All(char.IsDigit);
 
-            return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo);
+            Task<IEnumerable<AbrangenciaDreRetornoDto>> Buscar()
+                => repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo);
+
+            var configuracaoCache = usarCache && string.IsNullOrWhiteSpace(filtro)
+                ? await mediator.Send(ObterConfiguracaoCacheAbrangenciaQuery.Instance)
+                : null;
+
+            if (configuracaoCache.EhNulo())
+                return await Buscar();
+
+            // Mesma chave do ObterAbrangenciaDresQueryHandler (mesmos argumentos de RepositorioAbrangencia.ObterDres):
+            //   login, perfil, modalidade (null = 0), periodo, consideraHistorico, anoLetivo. Sem cache com filtro de texto.
+            var chave = string.Format(NomeChaveCache.ABRANGENCIA_DRES,
+                login, perfil, (int)(modalidade ?? 0), periodo, consideraHistorico, anoLetivo);
+
+            return await repositorioCacheAbrangencia.ObterComCacheAsync(chave, Buscar, configuracaoCache.ObterMinutosExpiracao(perfil));
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null)
@@ -159,12 +178,35 @@ namespace SME.SGP.Aplicacao
             return result.Where(r => turmasPrograma.Contains(r.Codigo));
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false, bool usarCache = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, new FiltroModalidade(modalidade ?? 0), new FiltroPeriodoLetivo(anoLetivo, consideraHistorico, periodo))).OrderBy(c => c.Nome).ToList();
+            Task<IEnumerable<AbrangenciaUeRetorno>> Buscar()
+                => repositorioAbrangencia.ObterUes(codigoDre, login, perfil, new FiltroModalidade(modalidade ?? 0), new FiltroPeriodoLetivo(anoLetivo, consideraHistorico, periodo));
+
+            var configuracaoCache = usarCache
+                ? await mediator.Send(ObterConfiguracaoCacheAbrangenciaQuery.Instance)
+                : null;
+
+            IEnumerable<AbrangenciaUeRetorno> ues;
+
+            if (configuracaoCache.EhNulo())
+                ues = await Buscar();
+            else
+            {
+                // Mesma chave do ObterUEsPorDREQueryHandler (mesmos argumentos de RepositorioAbrangencia.ObterUes):
+                //   codigoDre, login, perfil, modalidade, anoLetivo, consideraHistorico, periodo, ignorarTiposUE.
+                // Aqui ignorarTiposUE e filtroTexto não são passados ao repositório (null) → "null" na chave.
+                var chave = string.Format(NomeChaveCache.ABRANGENCIA_UES,
+                    login, perfil, codigoDre, (int)(modalidade ?? 0), anoLetivo, consideraHistorico, periodo,
+                    ((IEnumerable<int>)null).ParaChaveCache());
+
+                ues = await repositorioCacheAbrangencia.ObterComCacheAsync(chave, Buscar, configuracaoCache.ObterMinutosExpiracao(perfil));
+            }
+
+            return ues.OrderBy(c => c.Nome).ToList();
         }
 
         public async Task<IEnumerable<long>> ObterCodigoTurmasAbrangencia(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)
