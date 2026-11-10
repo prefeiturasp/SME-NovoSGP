@@ -42,6 +42,9 @@ namespace SME.SGP.IoC
                 .Bind(configuration.GetSection(RedisOptions.Secao), c => c.BindNonPublicProperties = true);
             services.AddSingleton<RedisOptions>();
 
+            services.AddOptions<KeyDbOptions>()
+                .Bind(configuration.GetSection(KeyDbOptions.Secao), c => c.BindNonPublicProperties = true);
+
             services.RegistraMemoryCache();
 
             services.AddSingleton(serviceProvider =>
@@ -78,8 +81,9 @@ namespace SME.SGP.IoC
             if (options.EhNulo() || !options.UtilizaRedis)
                 return new RepositorioCacheAbrangenciaMemoria(serviceProvider.GetService<IMemoryCache>(), servicoTelemetria, servicoMensageriaLogs, metricasCache);
 
-            // Redis:Endpoint2 (e demais *2); sem Endpoint2, usa o Redis principal.
-            var redisOptions = serviceProvider.GetService<IOptions<RedisOptions>>()?.Value?.ObterOpcoesAbrangencia() ?? new RedisOptions();
+            var redisPrincipal = serviceProvider.GetService<IOptions<RedisOptions>>()?.Value;
+            var keyDbOptions = serviceProvider.GetService<IOptions<KeyDbOptions>>()?.Value ?? new KeyDbOptions();
+            var redisOptions = keyDbOptions.ObterOpcoesAbrangencia(redisPrincipal);
             var connection = new ConnectionMultiplexerSME(redisOptions);
 
             // Circuit breaker próprio: falha neste Redis não abre o breaker do Redis principal (e vice-versa).

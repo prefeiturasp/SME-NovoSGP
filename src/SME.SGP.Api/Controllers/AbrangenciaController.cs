@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -180,6 +181,7 @@ namespace SME.SGP.Api.Controllers
 
 
         [HttpGet("dres/ues/{codigoUe}/turmas/disciplina/{codigoDisciplina}")]
+        [ConexaoConsultas(ConexaoConsultasAttribute.SGP_POSTGRES_CONSULTAS_TURVO2)]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
