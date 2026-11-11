@@ -81,7 +81,7 @@ atividade as (
     select enq.id,
            enq.encaminhamento_naapa_secao_id,
            enq.questao_id,
-           coalesce(bool_or(enr.id is not null and pg_temp.v782_preenchida(enr.resposta_id, enr.arquivo_id, enr.texto)), false) as possui_resposta,
+           count(enr.id) > 0 as possui_resposta,
            greatest(pg_temp.v782_atividade_usuario(enq.criado_em, enq.criado_rf, enq.alterado_em, enq.alterado_rf),
                     max(pg_temp.v782_atividade_usuario(enr.criado_em, enr.criado_rf, enr.alterado_em, enr.alterado_rf))) as atividade_usuario,
            greatest(coalesce(enq.alterado_em, enq.criado_em),
@@ -144,7 +144,8 @@ select distinct on (sm.id, o.questao_id)
                  from encaminhamento_naapa_resposta r
                 where r.questao_encaminhamento_id = o.id
                   and not r.excluido
-                  and pg_temp.v782_preenchida(r.resposta_id, r.arquivo_id, r.texto))
+                  and pg_temp.v782_preenchida(r.resposta_id, r.arquivo_id, r.texto)
+                  and coalesce(r.alterado_em, r.criado_em) > coalesce(sm.alterado_em, sm.criado_em))
    and not exists (select 1
                      from encaminhamento_naapa_questao qm
                     where qm.encaminhamento_naapa_secao_id = sm.id
@@ -190,6 +191,11 @@ with origem_ranqueada as (
                           and not atual.excluido
                           and pg_temp.v782_preenchida(atual.resposta_id, atual.arquivo_id, atual.texto))
      group by d.questao_destino_id, d.questao_origem_id
+    having max(coalesce(enr.alterado_em, enr.criado_em))
+           > coalesce((select max(coalesce(atual.alterado_em, atual.criado_em))
+                         from encaminhamento_naapa_resposta atual
+                        where atual.questao_encaminhamento_id = d.questao_destino_id
+                          and not atual.excluido), '-infinity'::timestamp)
 )
 insert into encaminhamento_naapa_resposta (questao_encaminhamento_id, resposta_id, arquivo_id, texto, excluido, criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf)
 select o.questao_destino_id, enr.resposta_id, enr.arquivo_id, enr.texto, false, enr.criado_em,
@@ -209,9 +215,11 @@ with candidata as (
            enr.criado_em, enr.criado_por, enr.criado_rf, enr.alterado_em, enr.alterado_por, enr.alterado_rf,
            coalesce(enr.alterado_em, enr.criado_em) as atividade
       from tmp_v782_destino d
+      join encaminhamento_naapa_questao qm on qm.id = d.questao_destino_id
       join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = d.questao_origem_id and not enr.excluido
      where d.tipo in (5, 6, 9, 22, 25)
        and (enr.resposta_id is not null or enr.arquivo_id is not null)
+       and coalesce(enr.alterado_em, enr.criado_em) > qm.criado_em
        and not exists (select 1
                          from encaminhamento_naapa_resposta atual
                         where atual.questao_encaminhamento_id = d.questao_destino_id
