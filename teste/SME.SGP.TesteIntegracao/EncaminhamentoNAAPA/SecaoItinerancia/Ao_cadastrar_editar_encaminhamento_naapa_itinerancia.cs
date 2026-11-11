@@ -479,7 +479,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.SecaoItinerancia
             respostaAnexo.All(r => r.Excluido).ShouldBeTrue();
 
             var arquivos = ObterTodos<Arquivo>();
-            arquivos.Count().ShouldBe(0);
+            arquivos.Count.ShouldBe(0);
         }
 
         private async Task<long> GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
