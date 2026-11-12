@@ -80,8 +80,8 @@ namespace SME.SGP.Dados.Repositorios
                     pe.criado_rf            as CriadoRF,
                     pe.bimestre,
                     pe.migrado              as Migrado,
-                    pe.periodo_fim,
-                    pe.periodo_inicio,
+                    pe.periodo_fim          AS PeriodoFim,
+                    pe.periodo_inicio       AS PeriodoInicio,
                     pe.tipo_calendario_id
                 from fechamento_turma f
                 inner join turma t
