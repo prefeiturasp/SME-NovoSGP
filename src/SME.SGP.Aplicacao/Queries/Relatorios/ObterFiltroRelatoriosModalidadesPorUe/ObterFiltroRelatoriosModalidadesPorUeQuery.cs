@@ -30,6 +30,9 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<Modalidade> ModalidadesQueSeraoIgnoradas { get; set; }
         public string Login { get; set; }
         public Guid Perfil { get; set; }
+
+        /// <summary>Usa o cache de abrangência (quando ligado no parâmetro UtilizarCacheAbrangencia).</summary>
+        public bool UsarCache { get; set; }
     }
 
     public class ObterFiltroRelatoriosModalidadesPorUeQueryValidator : AbstractValidator<ObterFiltroRelatoriosModalidadesPorUeQuery>

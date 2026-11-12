@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo > 0 ? anoLetivo : DateTime.Today.Year, consideraNovasModalidades));
 
             return await mediator
-                .Send(new ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(codigoUe, login, perfil, modalidadesQueSeraoIgnoradas, consideraHistorico, anoLetivo));
+                .Send(new ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(codigoUe, login, perfil, modalidadesQueSeraoIgnoradas, consideraHistorico, anoLetivo) { UsarCache = true });
         }
     }
 }

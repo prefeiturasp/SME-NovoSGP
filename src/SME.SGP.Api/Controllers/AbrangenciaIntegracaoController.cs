@@ -6,6 +6,7 @@ using SME.SGP.Api.Middlewares;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -25,6 +26,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("{consideraHistorico}/login/{login}/perfis/{perfil}/abrangencia-completa")]
+        [ConexaoConsultas(ConexaoConsultasAttribute.SGP_POSTGRES_CONSULTAS_TURVO2)]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
