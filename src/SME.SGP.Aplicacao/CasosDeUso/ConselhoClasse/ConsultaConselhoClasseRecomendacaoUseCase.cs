@@ -95,8 +95,14 @@ namespace SME.SGP.Aplicacao
             if (periodosLetivos.EhNulo() || !periodosLetivos.Any())
                 throw new NegocioException(MensagemNegocioPeriodo.NAO_FORAM_ENCONTRADOS_PERIODOS_TIPO_CALENDARIO);
 
-            var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
-            var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
+            
+            var periodoInicio = periodoEscolar?.PeriodoInicio > DateTime.MinValue
+                                ? periodoEscolar.PeriodoInicio
+                                : periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
+
+            var periodoFim = periodoEscolar?.PeriodoFim > DateTime.MinValue
+                                ? periodoEscolar.PeriodoFim
+                                : periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
             var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasPeriodoQuery(recomendacaoDto.AlunoCodigo,
                                                                                                                             turma.EhTurmaInfantil,
