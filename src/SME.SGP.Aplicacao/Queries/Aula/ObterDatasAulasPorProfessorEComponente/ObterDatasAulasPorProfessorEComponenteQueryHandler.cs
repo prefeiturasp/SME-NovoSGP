@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 aulasPermitidas = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor).Select(a => a.Id).ToList();
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, considerarVigenciaAtribuicao: true).Select(a => a.Id).ToList();
             }
 
             return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data.Date)
