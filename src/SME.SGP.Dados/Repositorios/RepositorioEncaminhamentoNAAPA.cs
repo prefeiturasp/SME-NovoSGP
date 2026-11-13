@@ -500,7 +500,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var encaminhamento = new EncaminhamentoNAAPA();
 
-           var consulta =  await database.Conexao.QueryAsync<
+            await database.Conexao.QueryAsync<
                 EncaminhamentoNAAPA,
                 EncaminhamentoNAAPASecao,
                 QuestaoEncaminhamentoNAAPA,
@@ -511,7 +511,10 @@ namespace SME.SGP.Dados.Repositorios
                 EncaminhamentoNAAPA>(
                     query,
                     (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta) =>
-                        MapearEncaminhamento(encaminhamento, encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta),
+                    {
+                        encaminhamento = MapearEncaminhamento(encaminhamento, encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta);
+                        return encaminhamento;
+                    },
                     new { id },
                     splitOn:
                        "EncaminhamentoNAAPAInicio," +
@@ -521,7 +524,7 @@ namespace SME.SGP.Dados.Repositorios
                         "SecaoConfiguradaInicio," +
                         "QuestaoInicio," +
                         "OpcaoRespostaInicio");
-           encaminhamento = consulta?.FirstOrDefault() ?? new EncaminhamentoNAAPA();
+
             return encaminhamento;
         }
 
@@ -554,7 +557,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var encaminhamento = new EncaminhamentoNAAPA();
 
-        var consulta = await database.Conexao.QueryAsync<
+            await database.Conexao.QueryAsync<
                 EncaminhamentoNAAPA,
                 EncaminhamentoNAAPASecao,
                 QuestaoEncaminhamentoNAAPA,
@@ -565,7 +568,10 @@ namespace SME.SGP.Dados.Repositorios
                 EncaminhamentoNAAPA>(
                     query,
                     (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta) =>
-                        MapearEncaminhamento(encaminhamento, encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta),
+                    {
+                        encaminhamento = MapearEncaminhamento(encaminhamento, encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta);
+                        return encaminhamento;
+                    },
                     new { id, secaoId },
                     splitOn:
                         "EncaminhamentoNAAPAInicio, " +
@@ -576,8 +582,7 @@ namespace SME.SGP.Dados.Repositorios
                         "QuestaoInicio," +
                         "OpcaoRespostaInicio");
 
-        encaminhamento = consulta?.FirstOrDefault() ?? new EncaminhamentoNAAPA();
-        return encaminhamento;
+            return encaminhamento;
         }
 
         public async Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
