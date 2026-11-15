@@ -289,6 +289,16 @@ namespace SME.SGP.IoC
                 return new SgpContextConsultas(configuration, provider.GetRequiredService<IContextoAplicacao>(),
                     ConexaoConsultasAttribute.ObterNomeConexao(atributo, configuration));
             });
+            services.TryAddScoped<ISgpContextConsultasAbrangencia>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var contextoAplicacao = provider.GetRequiredService<IContextoAplicacao>();
+                var nomeConexao = ConexaoConsultasAttribute.ObterNomeConexao(
+                    new ConexaoConsultasAttribute(ConexaoConsultasAttribute.SGP_POSTGRES_CONSULTAS_TURVO2), configuration);
+
+                return new SgpContextConsultasAbrangencia(
+                    () => new SgpContextConsultas(configuration, contextoAplicacao, nomeConexao), contextoAplicacao);
+            });
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }
 

@@ -19,11 +19,11 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioAbrangencia : IRepositorioAbrangencia
     {
         protected readonly ISgpContext database;
-        private readonly ISgpContextConsultas databaseConsultas;
+        private readonly ISgpContextConsultasAbrangencia databaseConsultas;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
 
         public RepositorioAbrangencia(ISgpContext database,
-                                      ISgpContextConsultas databaseConsultas,
+                                      ISgpContextConsultasAbrangencia databaseConsultas,
                                       IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
