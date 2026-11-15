@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -15,11 +16,14 @@ namespace SME.SGP.Aplicacao
         {
             var auditoria = await mediator.Send(new SalvarFechamentoCommand(fechamentoTurma));
 
-            if (!auditoria.EmAprovacao)
+            if (!auditoria.EmAprovacao && fechamentoTurma.EhFinal)
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
-                    new ConsolidacaoTurmaDto(long.Parse(fechamentoTurma.TurmaId), 0),
-                    Guid.NewGuid()));
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(fechamentoTurma.TurmaId));
+
+                if (turma.NaoEhNulo())
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
+                        new ConsolidacaoTurmaDto(turma.Id, 0),
+                        Guid.NewGuid()));
             }
 
             return auditoria;
