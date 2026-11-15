@@ -292,8 +292,10 @@ namespace SME.SGP.Dados.Repositorios
                     query.ToString(),
                     (fechamentoTurma, periodoEscolar, turma, tipoCalendario) =>
                     {
+                        periodoEscolar = periodoEscolar?.Id > 0 ? periodoEscolar : null;
+
                         if (periodoEscolar != null)
-                            periodoEscolar.TipoCalendario = tipoCalendario;
+                            periodoEscolar.TipoCalendario = tipoCalendario?.Id > 0 ? tipoCalendario : null;
 
                         fechamentoTurma.PeriodoEscolar = periodoEscolar;
                         fechamentoTurma.Turma = turma;
