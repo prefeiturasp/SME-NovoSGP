@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ObjetivoAprendizagemComponenteDto>> ObterObjetivosComComponentePlanoAula(long planoAulaId)
         {
-            var query = @"select
+            var query = @"select distinct
                              oaa.componente_curricular_id as ComponenteCurricularId,
                              oaa.objetivo_aprendizagem_id as Id
                         from objetivo_aprendizagem_aula oaa
