@@ -168,8 +168,11 @@ namespace SME.SGP.Api.Controllers
                 new FiltroModalidade(request.Modalidade, request.AnosTurma),
                 new FiltroPeriodoLetivo(request.AnoLetivo, ConsideraHistorico, request.Periodo),
                 request.Tipos,
-                request.ConsideraNovosAnosInfantil);
-            
+                request.ConsideraNovosAnosInfantil)
+            {
+                UsarCache = true
+            };
+
             var turmas = await mediator.Send(dto);
 
             if (!turmas.Any())
