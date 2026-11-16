@@ -52,6 +52,13 @@ namespace SME.SGP.TesteIntegracao.Setup
                 return new SgpContextConsultas(connection, contextoAplicacao);
             });
 
+            services.TryAddScoped<ISgpContextConsultasAbrangencia>(provider =>
+            {
+                var connection = provider.GetService<IDbConnection>();
+                var contextoAplicacao = provider.GetService<IContextoAplicacao>();
+                return new SgpContextConsultasAbrangencia(() => new SgpContextConsultas(connection, contextoAplicacao), contextoAplicacao);
+            });
+
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
             base.RegistrarPolicies(services);
         }
