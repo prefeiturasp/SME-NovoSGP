@@ -70,16 +70,19 @@ namespace SME.SGP.Aplicacao
 
                 // Salvar Objetivos aprendizagem
                 var objetivosAtuais =  (await mediator.Send(new ObterObjetivosAprendizagemAulaPorPlanoAulaIdQuery(planoAula.Id))).ToList();
-                var objetivosPropostos = planoAulaDto.ObjetivosAprendizagemComponente;
-                
+                var objetivosPropostos = planoAulaDto.ObjetivosAprendizagemComponente?
+                    .GroupBy(o => new { o.Id, o.ComponenteCurricularId })
+                    .Select(g => g.First())
+                    .ToList();
+
                 if (objetivosPropostos.PossuiRegistros())
                 {
-                    var objetivosIdParaIncluir = objetivosPropostos.Select(s => s.Id).Except(objetivosAtuais.Select(s => s.ObjetivoAprendizagemId));
-                    var objetivosIdParaExcluir = objetivosAtuais.Select(s => s.ObjetivoAprendizagemId).Except(objetivosPropostos.Select(s => s.Id));
+                    var idsAtuais = objetivosAtuais.Select(s => s.ObjetivoAprendizagemId).ToHashSet();
+                    var idsPropostos = objetivosPropostos.Select(s => s.Id).ToHashSet();
 
-                    foreach (var objetivoAtual in objetivosAtuais.Where(w => objetivosIdParaExcluir.Contains(w.ObjetivoAprendizagemId)))
+                    foreach (var objetivoAtual in objetivosAtuais.Where(w => !idsPropostos.Contains(w.ObjetivoAprendizagemId)))
                         await ExcluirObjetivoAprendizagemAulaLogicamente(objetivoAtual);
-                    foreach (var objetivoAprendizagem in objetivosPropostos.Where(w=> objetivosIdParaIncluir.Contains(w.Id)))
+                    foreach (var objetivoAprendizagem in objetivosPropostos.Where(w => !idsAtuais.Contains(w.Id)))
                         await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
                 }
                 else
