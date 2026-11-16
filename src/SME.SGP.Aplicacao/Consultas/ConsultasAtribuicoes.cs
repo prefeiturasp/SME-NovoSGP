@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
 
             }
             else
-                return await consultasAbrangencia.ObterAnosLetivos(consideraHistorico, ANO_LETIVO_MINIMO);
+                return await consultasAbrangencia.ObterAnosLetivos(consideraHistorico, ANO_LETIVO_MINIMO, usarCache: true);
         }
 
         public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(int anoLetivo, bool consideraHistorico)
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                     return null;
             }
             else
-                return await consultasAbrangencia.ObterDres(null, 0, consideraHistorico, anoLetivo);
+                return await consultasAbrangencia.ObterDres(null, 0, consideraHistorico, anoLetivo, usarCache: true);
         }
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, int anoLetivo, bool consideraHistorico)
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
                     return null;
             }
             else
-                return await consultasAbrangencia.ObterUes(codigoDre, null, 0, consideraHistorico, anoLetivo);
+                return await consultasAbrangencia.ObterUes(codigoDre, null, 0, consideraHistorico, anoLetivo, usarCache: true);
         }
 
         private void ObterAtribuicoesCjAnosLetivos(string professorRf, List<int> anosLetivos, Modalidade? modalidade = null, bool historico = false)

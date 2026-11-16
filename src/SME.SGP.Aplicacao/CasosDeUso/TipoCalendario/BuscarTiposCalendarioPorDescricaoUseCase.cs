@@ -34,8 +34,8 @@ namespace SME.SGP.Aplicacao
             lstAbrangencia.AddRange(abrangenciaHistorica);
 
             //TODO: MELHORAR ISSO AQUI
-            var anosLetivosHistorico = await consultasAbrangencia.ObterAnosLetivos(true, 0);
-            var anosLetivos = await consultasAbrangencia.ObterAnosLetivos(false, 0);
+            var anosLetivosHistorico = await consultasAbrangencia.ObterAnosLetivos(true, 0, usarCache: true);
+            var anosLetivos = await consultasAbrangencia.ObterAnosLetivos(false, 0, usarCache: true);
             int[] anosLetivosTipoCalendario = anosLetivosHistorico.Union(anosLetivos.ToArray()).ToArray();    
 
             string[] codigosUes = lstAbrangencia.Select(a => a.CodigoUe)?.Distinct()?.ToArray();

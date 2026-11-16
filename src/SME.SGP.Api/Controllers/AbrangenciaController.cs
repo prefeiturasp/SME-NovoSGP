@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -82,7 +83,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterAnosLetivos([FromQuery] int anoMinimo)
         {
-            int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico, anoMinimo)).ToArray();
+            int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico, anoMinimo, usarCache: true)).ToArray();
 
             if (!retorno.Any())
                 return NoContent();
@@ -141,12 +142,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSemestres([FromQuery] FiltroSemestreDto filtroSemestreDto)
         {
             var retorno = await consultasAbrangencia
-                .ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
+                .ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo, usarCache: true);
 
             if ((retorno.EhNulo() || !retorno.Any()) && !ConsideraHistorico)
             {
                 retorno = await consultasAbrangencia
-                    .ObterSemestres(filtroSemestreDto.Modalidade, true, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
+                    .ObterSemestres(filtroSemestreDto.Modalidade, true, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo, usarCache: true);
             }
 
             if (!retorno.Any())
@@ -180,6 +181,7 @@ namespace SME.SGP.Api.Controllers
 
 
         [HttpGet("dres/ues/{codigoUe}/turmas/disciplina/{codigoDisciplina}")]
+        [ConexaoConsultas(ConexaoConsultasAttribute.SGP_POSTGRES_CONSULTAS_TURVO2)]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

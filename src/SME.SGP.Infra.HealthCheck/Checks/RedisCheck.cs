@@ -18,10 +18,16 @@ namespace SME.SGP.Infra
 
         public RedisCheck(IRepositorioCache repositorioCache, IOptions<RedisOptions> redisOptions,
             IOptions<ConfiguracaoCacheOptions> configuracaoCacheOptions)
+            : this(repositorioCache, redisOptions.Value, configuracaoCacheOptions.Value)
+        {
+        }
+
+        protected RedisCheck(IRepositorioCache repositorioCache, RedisOptions redisOptions,
+            ConfiguracaoCacheOptions configuracaoCacheOptions)
         {
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
-            this.redisOptions = redisOptions.Value ?? throw new ArgumentNullException(nameof(redisOptions));
-            this.configuracaoCacheOptions = configuracaoCacheOptions.Value ?? throw new ArgumentNullException(nameof(configuracaoCacheOptions));
+            this.redisOptions = redisOptions ?? throw new ArgumentNullException(nameof(redisOptions));
+            this.configuracaoCacheOptions = configuracaoCacheOptions ?? throw new ArgumentNullException(nameof(configuracaoCacheOptions));
         }
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())

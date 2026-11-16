@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
                     ConsideraHistorico = consideraHistorico
                 };
 
-                var ues = await mediator.Send(new ObterUEsPorDREQuery(dto, usuario.Login, usuario.PerfilAtual));
+                var ues = await mediator.Send(new ObterUEsPorDREQuery(dto, usuario.Login, usuario.PerfilAtual, usarCache: true));
                 if (ues.NaoEhNulo() && ues.Any())
                     return ues.Select(x => x.Id).ToArray();
 

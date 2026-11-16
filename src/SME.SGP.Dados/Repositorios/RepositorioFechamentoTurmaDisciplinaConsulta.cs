@@ -711,7 +711,11 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                                     inner join periodo_escolar p on p.id = ft.periodo_escolar_id
                                     inner join turma t on t.id = ft.turma_id
-                                    left join usuario u on u.rf_codigo = coalesce(f.alterado_rf, f.criado_rf)
+                                    left join lateral (select us.id
+                                                         from usuario us
+                                                        where us.rf_codigo = coalesce(f.alterado_rf, f.criado_rf)
+                                                        order by us.login is null, us.id
+                                                        limit 1) u on true
                                     where t.turma_id = @turmaCodigo
                                     and f.disciplina_id = @disciplinaId
                                     and p.bimestre = @bimestre");
@@ -755,10 +759,14 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                                     inner join periodo_escolar p on p.id = ft.periodo_escolar_id
                                     inner join turma t on t.id = ft.turma_id
-                                    left join usuario u on u.rf_codigo = coalesce(f.alterado_rf, f.criado_rf)
+                                    left join lateral (select us.id
+                                                         from usuario us
+                                                        where us.rf_codigo = coalesce(f.alterado_rf, f.criado_rf)
+                                                        order by us.login is null, us.id
+                                                        limit 1) u on true
                                     where f.situacao = any(@situacoesFechamento) and t.ue_id = @idUe and t.ano_letivo = @anoletivo ");
             if (fechamentoTurmaDisciplinaIdsIgnorados.NaoEhNulo() && fechamentoTurmaDisciplinaIdsIgnorados.Any())
-                query.Append(" and f.id != any(@fechamentoTurmaDisciplinaIdsIgnorados) ");
+                query.Append(" and f.id <> all(@fechamentoTurmaDisciplinaIdsIgnorados) ");
 
             return database.Conexao.QueryAsync<FechamentoTurmaDisciplinaPendenciaDto>(query.ToString(),
                 new

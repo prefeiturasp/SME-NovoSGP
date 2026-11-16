@@ -16,6 +16,9 @@ namespace SME.SGP.Aplicacao
         public bool ConsideraHistorico { get; set; }
         public int AnoLetivo { get; set; }
 
+        /// <summary>Usa o cache de abrangência (quando ligado no parâmetro UtilizarCacheAbrangencia).</summary>
+        public bool UsarCache { get; set; }
+
         public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(string codigoUe, string login, Guid perfil, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas, bool consideraHistorico = false, int anoLetivo = 0)
         {
             CodigoUe = codigoUe;

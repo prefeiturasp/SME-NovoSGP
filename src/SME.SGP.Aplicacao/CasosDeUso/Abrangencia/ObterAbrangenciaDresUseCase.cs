@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                 .Send(ObterPerfilAtualQuery.Instance);
 
             return await mediator
-                .Send(new ObterAbrangenciaDresQuery(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro));
+                .Send(new ObterAbrangenciaDresQuery(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro) { UsarCache = true });
         }
     }
 }

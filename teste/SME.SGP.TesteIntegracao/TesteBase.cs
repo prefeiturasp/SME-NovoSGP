@@ -61,7 +61,9 @@ namespace SME.SGP.TesteIntegracao
             RegistrarQueryFakes(services);
             
             services.Replace(new ServiceDescriptor(typeof(IRepositorioCache),
-                typeof(RepositorioCacheFake), ServiceLifetime.Scoped));            
+                typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioCacheAbrangencia),
+                typeof(RepositorioCacheAbrangenciaFake), ServiceLifetime.Scoped));
         }
 
         protected virtual void RegistrarCommandFakes(IServiceCollection services)

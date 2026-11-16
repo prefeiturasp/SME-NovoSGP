@@ -19,7 +19,9 @@ namespace SME.SGP.Infra
 
         public static IHealthChecksBuilder AddRedisSgp(this IHealthChecksBuilder builder)
         {
-            return builder.AddCheck<RedisCheck>("Redis");
+            return builder
+                .AddCheck<RedisCheck>("Redis")
+                .AddCheck<RedisAbrangenciaCheck>("Redis Abrangência");
         }
 
         public static IHealthChecksBuilder AddRabbitMqSgp(this IHealthChecksBuilder builder, IConfiguration configuration)

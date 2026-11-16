@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo, consideraNovasModalidades));
 
             return await mediator
-                .Send(new ObterModalidadesPorAnoQuery(anoLetivo, consideraHistorico, login, perfil, modalidadesQueSeraoIgnoradas));
+                .Send(new ObterModalidadesPorAnoQuery(anoLetivo, consideraHistorico, login, perfil, modalidadesQueSeraoIgnoradas) { UsarCache = true });
         }
     }
 }

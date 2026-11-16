@@ -22,6 +22,9 @@ namespace SME.SGP.Aplicacao
         public bool ConsideraNovosTiposUE { get; }
         public bool ConsideraHistorico { get; }
         public int AnoLetivo { get; set; }
+
+        /// <summary>Usa o cache de abrangência (quando ligado no parâmetro UtilizarCacheAbrangencia).</summary>
+        public bool UsarCache { get; set; }
     }
 
     public class ObterFiltroRelatoriosUesPorAbrangenciaQueryValidator : AbstractValidator<ObterFiltroRelatoriosUesPorAbrangenciaQuery>

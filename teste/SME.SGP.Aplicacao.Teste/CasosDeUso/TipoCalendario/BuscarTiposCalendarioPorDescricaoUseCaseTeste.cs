@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
             mediator.Setup(x => x.Send(It.IsAny<ObterAbrangenciaPorFiltroQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockRetornoAbrangencia);
 
-            consultasAbrangencia.Setup(x => x.ObterAnosLetivos(It.IsAny<bool>(), It.IsAny<int>()))
+            consultasAbrangencia.Setup(x => x.ObterAnosLetivos(It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(mockRetornoAnosLetivos);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterModalidadesPorCodigosUeQuery>(), It.IsAny<CancellationToken>()))
@@ -131,8 +131,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
 
             mediator.Verify(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterAbrangenciaPorFiltroQuery>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
-            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(true, 0), Times.Once);
-            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(false, 0), Times.Once);
+            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(true, 0, true), Times.Once);
+            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(false, 0, true), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterModalidadesPorCodigosUeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterTiposCalendariosPorAnosLetivoModalidadesQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterTiposCalendariosPorBuscaQuery>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -181,7 +181,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
             mediator.Setup(x => x.Send(It.IsAny<ObterAbrangenciaPorFiltroQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockRetornoAbrangencia);
 
-            consultasAbrangencia.Setup(x => x.ObterAnosLetivos(It.IsAny<bool>(), It.IsAny<int>()))
+            consultasAbrangencia.Setup(x => x.ObterAnosLetivos(It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(mockRetornoAnosLetivos);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterModalidadesPorCodigosUeQuery>(), It.IsAny<CancellationToken>()))
@@ -194,8 +194,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
 
             mediator.Verify(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterAbrangenciaPorFiltroQuery>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
-            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(true, 0), Times.Once);
-            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(false, 0), Times.Once);
+            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(true, 0, true), Times.Once);
+            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(false, 0, true), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterModalidadesPorCodigosUeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterTiposCalendariosPorAnosLetivoModalidadesQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
@@ -243,7 +243,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
             mediator.Setup(x => x.Send(It.IsAny<ObterAbrangenciaPorFiltroQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockRetornoAbrangencia);
 
-            consultasAbrangencia.Setup(x => x.ObterAnosLetivos(It.IsAny<bool>(), It.IsAny<int>()))
+            consultasAbrangencia.Setup(x => x.ObterAnosLetivos(It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<bool>()))
                 .ReturnsAsync(mockRetornoAnosLetivos);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterModalidadesPorCodigosUeQuery>(), It.IsAny<CancellationToken>()))
@@ -256,8 +256,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
 
             mediator.Verify(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterAbrangenciaPorFiltroQuery>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
-            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(true, 0), Times.Once);
-            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(false, 0), Times.Once);
+            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(true, 0, true), Times.Once);
+            consultasAbrangencia.Verify(x => x.ObterAnosLetivos(false, 0, true), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterModalidadesPorCodigosUeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
             mediator.Verify(x => x.Send(It.IsAny<ObterTiposCalendariosPorAnosLetivoModalidadesQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
