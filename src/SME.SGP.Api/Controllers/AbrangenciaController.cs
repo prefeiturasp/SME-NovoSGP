@@ -6,7 +6,6 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Contexto;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -169,8 +168,11 @@ namespace SME.SGP.Api.Controllers
                 new FiltroModalidade(request.Modalidade, request.AnosTurma),
                 new FiltroPeriodoLetivo(request.AnoLetivo, ConsideraHistorico, request.Periodo),
                 request.Tipos,
-                request.ConsideraNovosAnosInfantil);
-            
+                request.ConsideraNovosAnosInfantil)
+            {
+                UsarCache = true
+            };
+
             var turmas = await mediator.Send(dto);
 
             if (!turmas.Any())
@@ -181,7 +183,6 @@ namespace SME.SGP.Api.Controllers
 
 
         [HttpGet("dres/ues/{codigoUe}/turmas/disciplina/{codigoDisciplina}")]
-        [ConexaoConsultas(ConexaoConsultasAttribute.SGP_POSTGRES_CONSULTAS_TURVO2)]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

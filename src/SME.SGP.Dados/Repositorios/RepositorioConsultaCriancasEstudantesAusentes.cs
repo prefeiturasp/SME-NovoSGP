@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.ConsultaCriancasEstudantesAusentes;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,51 +21,44 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AlunosAusentesDto>> ObterTurmasAlunosAusentes(FiltroObterAlunosAusentesDto filtro)
         {
+            var dataInicioAno = new DateTime(filtro.AnoLetivo, 1, 1);
+
             var parametro = new
             {
                 tipoFalta = (int)TipoFrequencia.F,
                 filtro.CodigoTurma,
-                filtro.AnoLetivo,
-                filtro.CodigoUe
+                filtro.CodigoUe,
+                dataInicioAno,
+                dataFimAno = dataInicioAno.AddYears(1)
             };
 
             var sql = new StringBuilder();
-            sql.AppendLine(@";with sequencia_frequencia as
-                            (select codigo_aluno, data_aula, 
-                            row_number() over(partition by codigo_aluno order by data_aula) as linha
-                            from (
-                            select distinct rfa.codigo_aluno, a.data_aula
-                               from registro_frequencia_aluno rfa
-                                   inner join aula a on rfa.aula_id = a.id and not a.excluido   
-                               where
-                                      a.turma_id = @CodigoTurma
+            sql.AppendLine(@"with dados_diarios as materialized (
+                                select rfa.codigo_aluno,
+                                       a.data_aula,
+                                       bool_or(not rfa.excluido) as possui_registro_ativo,
+                                       bool_or(rfa.valor <> @tipoFalta) as possui_valor_diferente_falta
+                                  from aula a
+                                 inner join registro_frequencia_aluno rfa on rfa.aula_id = a.id
+                                 where a.turma_id = @CodigoTurma
                                    and a.ue_id = @CodigoUe
-                                   and extract(year from a.data_aula) = @AnoLetivo                 
-                                   and not rfa.excluido
-                            order by rfa.codigo_aluno, a.data_aula) tab)");
+                                   and a.data_aula >= @dataInicioAno
+                                   and a.data_aula < @dataFimAno
+                                   and not a.excluido
+                                 group by rfa.codigo_aluno, a.data_aula)
+                            ,sequencia_frequencia as (
+                                select codigo_aluno,
+                                       data_aula,
+                                       possui_valor_diferente_falta,
+                                       row_number() over(partition by codigo_aluno order by data_aula) as linha
+                                  from dados_diarios
+                                 where possui_registro_ativo)");
 
             sql.AppendLine(@$",ausencias as (
-                            select distinct rfa.codigo_aluno, a.data_aula, sq.linha
-                               from registro_frequencia_aluno rfa
-                               inner join aula a on rfa.aula_id = a.id and not a.excluido   
-                               inner join sequencia_frequencia sq on sq.codigo_aluno = rfa.codigo_aluno and sq.data_aula = a.data_aula
-                               where
-                                      a.turma_id = @CodigoTurma
-                                   and a.ue_id = @CodigoUe
-                                   and extract(year from a.data_aula) = @AnoLetivo                
-                                   and not rfa.excluido
-                                   and not exists(select 1 
-                                                      from registro_frequencia_aluno rfa_ext
-                                                   inner join aula a_ext on rfa_ext.aula_id = a_ext.id and not a_ext.excluido  
-                                                   where a_ext.data_aula = a.data_aula 
-                                                   and a_ext.turma_id = a.turma_id
-                                                   and a_ext.ue_id = a.ue_id 
-                                                   and rfa_ext.codigo_aluno = rfa.codigo_aluno
-                                                   and extract(year from a_ext.data_aula) = @AnoLetivo
-                                                   and not rfa.excluido
-                                                   and rfa_ext.valor <> @tipoFalta)
-                                   { ObterQueryUltimasAulas(filtro.Ausencias) }
-                                   order by rfa.codigo_aluno, a.data_aula)");
+                                select codigo_aluno, linha
+                                  from sequencia_frequencia a
+                                 where not possui_valor_diferente_falta
+                                 {ObterQueryUltimasAulas(filtro.Ausencias)})");
 
             sql.AppendLine(ObterQueryResultadoAlunosAusentes(filtro.Ausencias));
 

@@ -53,5 +53,8 @@ namespace SME.SGP.Aplicacao
         /// </summary>
         public static string ParaChaveCache(this string valor)
             => valor ?? "null";
+
+        public static string ParaChaveCache(this IEnumerable<string> itens)
+            => itens == null ? "null" : string.Join(",", itens.OrderBy(i => i));
     }
 }

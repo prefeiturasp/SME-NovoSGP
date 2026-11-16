@@ -22,6 +22,8 @@ namespace SME.SGP.Aplicacao
         public FiltroPeriodoLetivo FiltroPeriodoLetivo { get; set; }
         public int[] Tipos { get; set; }
         public bool ConsideraNovosAnosInfantil { get; set; }
+
+        public bool UsarCache { get; set; }
     }
     public class ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryValidator : AbstractValidator<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery>
     {

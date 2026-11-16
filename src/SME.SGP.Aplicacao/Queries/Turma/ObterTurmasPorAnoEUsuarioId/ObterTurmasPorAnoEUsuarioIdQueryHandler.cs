@@ -10,13 +10,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasPorAnoEUsuarioIdQueryHandler : IRequestHandler<ObterTurmasPorAnoEUsuarioIdQuery, IEnumerable<TurmaNaoHistoricaDto>>
     {
-        private readonly IRepositorioTurmaConsulta repositorioTurma;
-        public ObterTurmasPorAnoEUsuarioIdQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
+        public ObterTurmasPorAnoEUsuarioIdQueryHandler(IRepositorioAbrangencia repositorioAbrangencia)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
         }
 
         public async Task<IEnumerable<TurmaNaoHistoricaDto>> Handle(ObterTurmasPorAnoEUsuarioIdQuery request, CancellationToken cancellationToken)
-         => await repositorioTurma.ObterTurmasPorUsuarioEAnoLetivo(request.UsuarioId, request.AnoLetivo);
+         => await repositorioAbrangencia.ObterTurmasPorUsuarioEAnoLetivo(request.UsuarioId, request.AnoLetivo);
     }
 }

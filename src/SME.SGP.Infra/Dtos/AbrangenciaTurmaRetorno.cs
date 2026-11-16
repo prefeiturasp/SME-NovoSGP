@@ -32,6 +32,8 @@ namespace SME.SGP.Dto
             set => nomeFiltroFormatado = value;
         }
 
+        public string ObterNomeFiltroOriginal() => nomeFiltroFormatado;
+
         private string NomeFiltroFormatado()
         {
             var modalidadeEnum = ((Modalidade)CodigoModalidade);
