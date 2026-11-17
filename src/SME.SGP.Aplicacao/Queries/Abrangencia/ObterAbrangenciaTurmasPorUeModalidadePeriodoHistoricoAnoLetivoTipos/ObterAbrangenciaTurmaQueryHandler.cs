@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
@@ -17,18 +18,57 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
+        private readonly IRepositorioCacheAbrangencia repositorioCacheAbrangencia;
 
-        public ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandler(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario, IMediator mediator)
+        public ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandler(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario, IMediator mediator,
+                                                                                               IRepositorioCacheAbrangencia repositorioCacheAbrangencia)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCacheAbrangencia = repositorioCacheAbrangencia ?? throw new ArgumentNullException(nameof(repositorioCacheAbrangencia));
         }
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> Handle(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery request,CancellationToken cancellationToken)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
+
+            var configuracaoCache = request.UsarCache
+                ? await mediator.Send(ObterConfiguracaoCacheAbrangenciaQuery.Instance)
+                : null;
+
+            if (configuracaoCache.EhNulo())
+                return await Buscar(request, login, perfil);
+
+            var chave = MontarChaveCache(request, login, perfil);
+
+            var turmas = await repositorioCacheAbrangencia.ObterComCacheAsync(chave,
+                async () => (await Buscar(request, login, perfil)).Select(TurmaCache.De).ToList(),
+                configuracaoCache.ObterMinutosExpiracao(perfil));
+
+            return turmas.Select(t => t.ParaRetorno()).ToList();
+        }
+
+        public static string MontarChaveCache(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery request, string login, Guid perfil)
+        {
+            var tipos = request.Tipos.NaoEhNulo() && request.Tipos.Any() ? request.Tipos : null;
+
+            return string.Format(NomeChaveCache.ABRANGENCIA_TURMAS_UE,
+                login,
+                perfil,
+                request.CodigoUe,
+                (int)(request.FiltroModalidade?.Modalidade ?? 0),
+                request.FiltroModalidade?.AnosTurma.ParaChaveCache(),
+                request.FiltroPeriodoLetivo?.AnoLetivo,
+                request.FiltroPeriodoLetivo?.ConsideraHistorico,
+                request.FiltroPeriodoLetivo?.Periodo,
+                tipos.ParaChaveCache(),
+                request.ConsideraNovosAnosInfantil);
+        }
+
+        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> Buscar(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery request, string login, Guid perfil)
+        {
             var anosInfantilDesconsiderar = !request.ConsideraNovosAnosInfantil
                 ? await mediator.Send(
                     new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.FiltroPeriodoLetivo.AnoLetivo,
@@ -106,6 +146,48 @@ namespace SME.SGP.Aplicacao
             turmasOrdenadas.AddRange(turmasItinerario.OrderBy(a => a.ModalidadeTurmaNome));
 
             return turmasOrdenadas;
+        }
+
+        public class TurmaCache
+        {
+            public string Ano { get; set; }
+            public int AnoLetivo { get; set; }
+            public string Codigo { get; set; }
+            public int CodigoModalidade { get; set; }
+            public string Nome { get; set; }
+            public string NomeFiltroOriginal { get; set; }
+            public int Semestre { get; set; }
+            public bool EnsinoEspecial { get; set; }
+            public long Id { get; set; }
+            public int TipoTurma { get; set; }
+
+            public static TurmaCache De(AbrangenciaTurmaRetorno turma) => new()
+            {
+                Ano = turma.Ano,
+                AnoLetivo = turma.AnoLetivo,
+                Codigo = turma.Codigo,
+                CodigoModalidade = turma.CodigoModalidade,
+                Nome = turma.Nome,
+                NomeFiltroOriginal = turma.ObterNomeFiltroOriginal(),
+                Semestre = turma.Semestre,
+                EnsinoEspecial = turma.EnsinoEspecial,
+                Id = turma.Id,
+                TipoTurma = turma.TipoTurma
+            };
+
+            public AbrangenciaTurmaRetorno ParaRetorno() => new()
+            {
+                Ano = Ano,
+                AnoLetivo = AnoLetivo,
+                Codigo = Codigo,
+                CodigoModalidade = CodigoModalidade,
+                Nome = Nome,
+                NomeFiltro = NomeFiltroOriginal,
+                Semestre = Semestre,
+                EnsinoEspecial = EnsinoEspecial,
+                Id = Id,
+                TipoTurma = TipoTurma
+            };
         }
     }
 }

@@ -1237,5 +1237,34 @@ namespace SME.SGP.Dados.Repositorios
 
             return retorno;
         }
+
+        public async Task<IEnumerable<TurmaNaoHistoricaDto>> ObterTurmasPorUsuarioEAnoLetivo(long usuarioId, int anoLetivo)
+        {
+            string query;
+            if (anoLetivo == DateTimeExtension.HorarioBrasilia().Year)
+            {
+                query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
+                            t.nome as Nome, t.nome_filtro as nomeFiltro,
+                                    COALESCE(t.ano, '0') AS AnoTurma,
+                                    t.ano_letivo  AS AnoLetivo
+                                from v_abrangencia a
+                                inner join turma t on t.turma_id = a.turma_id
+                                where a.usuario_id = @usuarioId
+                                and a.turma_ano_letivo = @anoLetivo and not t.historica order by t.nome";
+            }
+            else
+            {
+                query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
+                            t.nome as Nome, t.nome_filtro as nomeFiltro, 
+                                    COALESCE(t.ano, '0') AS AnoTurma,
+                                    t.ano_letivo  AS AnoLetivo
+                                from v_abrangencia_historica a
+                                inner join turma t on t.turma_id = a.turma_id
+                                where a.usuario_id = @usuarioId
+                                and a.turma_ano_letivo = @anoLetivo
+                                order by t.nome";
+            }
+            return await databaseConsultas.Conexao.QueryAsync<TurmaNaoHistoricaDto>(query, new { usuarioId, anoLetivo });
+        }
     }
 }
