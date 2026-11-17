@@ -36,7 +36,9 @@ namespace SME.SGP.Aplicacao
             if (professoresDaTurma is null || !professoresDaTurma.Any())
                 return false;
 
-            var fechamento = fechamentos?.FirstOrDefault();
+            var fechamento = (filtro.Bimestre ?? 0) == 0
+                ? fechamentos?.FirstOrDefault(f => !(f.FechamentoTurma?.PeriodoEscolarId > 0))
+                : fechamentos?.FirstOrDefault();
 
             var atualizarConsolidado = false;
 

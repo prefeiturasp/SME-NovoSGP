@@ -363,12 +363,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private static int? ObterBimestre(int? bimestre, bool ehFinal)
-        {
-            if (!ehFinal || (bimestre.HasValue && bimestre.Value > 0))
-                return bimestre;
-
-            return null;
-        }
+            => ehFinal ? null : bimestre;
 
         private async Task<Turma> ObterTurma(string turmaId)
         {
