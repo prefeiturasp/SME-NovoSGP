@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricularesPorAnosEModalidade;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +12,40 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorUeAnosModalidadeUseCase : IObterComponentesCurricularesPorUeAnosModalidadeUseCase
     {
-        private readonly IMediator mediator;
+        private const string TODOS = "-99";
 
-        public ObterComponentesCurricularesPorUeAnosModalidadeUseCase(IMediator mediator)
+        private readonly IMediator mediator;
+        private readonly IRepositorioCacheAbrangencia repositorioCacheAbrangencia;
+
+        public ObterComponentesCurricularesPorUeAnosModalidadeUseCase(IMediator mediator, IRepositorioCacheAbrangencia repositorioCacheAbrangencia)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCacheAbrangencia = repositorioCacheAbrangencia ?? throw new ArgumentNullException(nameof(repositorioCacheAbrangencia));
         }
+
         public async Task<IEnumerable<ComponenteCurricularEol>> Executar(string[] anos, int anoLetivo, string ueCodigo, Modalidade modalidade)
+        {
+            var configuracaoCache = await mediator.Send(ObterConfiguracaoCacheAbrangenciaQuery.Instance);
+            if (configuracaoCache.EhNulo())
+                return await Buscar(anos, anoLetivo, ueCodigo, modalidade);
+
+            var chave = MontarChaveCache(anos, anoLetivo, ueCodigo, modalidade);
+
+            return await repositorioCacheAbrangencia.ObterComCacheAsync(chave,
+                async () => (await Buscar(anos, anoLetivo, ueCodigo, modalidade)).ToList(),
+                configuracaoCache.Minutos);
+        }
+
+        private static string MontarChaveCache(string[] anos, int anoLetivo, string ueCodigo, Modalidade modalidade)
+        {
+            var anosChave = anos.Contains(TODOS) ? string.Empty : anos.Distinct().ParaChaveCache();
+            var ueChave = ueCodigo == TODOS ? string.Empty : ueCodigo.ParaChaveCache();
+
+            return string.Format(NomeChaveCache.COMPONENTES_CURRICULARES_RELATORIO_UE_MODALIDADE_ANOS,
+                anoLetivo, ueChave, (int)modalidade, anosChave);
+        }
+
+        private async Task<IEnumerable<ComponenteCurricularEol>> Buscar(string[] anos, int anoLetivo, string ueCodigo, Modalidade modalidade)
         {
             var listaComponentes = new List<ComponenteCurricularEol>();
             if (anos.Contains("-99"))

@@ -277,11 +277,11 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select distinct coalesce(p.alterado_em, p.criado_em), p.* from pendencia p where id = any(@pendenciasFiltradas) and p.criado_em >= @dataCriacao ";
 
             if (!string.IsNullOrEmpty(tituloPendencia))
-                query = $"{query} and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
+                query = $"{query} and UPPER(p.titulo) like UPPER('%' || @tituloPendencia || '%')";
 
             query = $"{query} order by coalesce(p.alterado_em, p.criado_em) desc ";
 
-            return await database.Conexao.QueryAsync<Pendencia>(query, new { pendenciasFiltradas, dataCriacao }, commandTimeout: 120);
+            return await database.Conexao.QueryAsync<Pendencia>(query, new { pendenciasFiltradas, dataCriacao, tituloPendencia }, commandTimeout: 120);
         }
 
         private static string RetornaQueryParaUnicoTipoPendenciaGrupo(TipoPendenciaGrupo tipoPendenciaGrupo, string turmaCodigo)

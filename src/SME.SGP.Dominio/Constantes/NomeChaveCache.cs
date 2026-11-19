@@ -60,6 +60,7 @@
         public const string ABRANGENCIA_SEMESTRES = "abrangencia-semestres:{0}-{1}-{2}-{3}-{4}-{5}-{6}";
         public const string ABRANGENCIA_MODALIDADES_UE = "abrangencia-modalidades-ue:{0}-{1}-{2}-{3}-{4}-{5}";
         public const string ABRANGENCIA_TURMAS_UE = "abrangencia-turmas-ue:{0}-{1}-{2}-{3}-{4}-{5}-{6}-{7}-{8}-{9}";
+        public const string COMPONENTES_CURRICULARES_RELATORIO_UE_MODALIDADE_ANOS = "componentes-curriculares-relatorio:{0}-{1}-{2}-{3}";
         public const string ABRANGENCIA_TURMAS_VIGENTES = "abrangencia-turmas-vigentes:{0}-{1}-{2}";
         public const string PARAMETRO_NOVOS_TIPOS_UE = "parametro-novos-tipos-ue:{0}";
         public const string PARAMETRO_UTILIZAR_CACHE_ABRANGENCIA = "parametro-utilizar-cache-abrangencia";
